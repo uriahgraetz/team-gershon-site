@@ -3,8 +3,17 @@
 import { useState } from "react";
 import { useReveal } from "@/hooks/useReveal";
 
-const contactMethods = [
-  { icon: "📍", label: "Location", value: "רחוב רבי צדוק 12 (ביה״ס גבעת גונן), ירושלים" },
+type ContactMethod = { icon: string; label: string; value: string; href?: string };
+
+const MAPS_QUERY = encodeURIComponent("רחוב רבי צדוק 12 ירושלים");
+
+const contactMethods: ContactMethod[] = [
+  {
+    icon: "📍",
+    label: "Location",
+    value: "רחוב רבי צדוק 12 (ביה״ס גבעת גונן), ירושלים",
+    href: `https://www.google.com/maps/search/?api=1&query=${MAPS_QUERY}`,
+  },
   { icon: "📞", label: "Phone",    value: "+972 50 XXX XXXX" },
   { icon: "📧", label: "Email",    value: "info@teamgershon.com" },
   { icon: "⏰", label: "Hours",    value: "Sun–Thu 6am–10pm · Fri 6am–2pm" },
@@ -76,20 +85,40 @@ export default function Contact() {
           </p>
 
           <div className="mt-10 flex flex-col gap-5">
-            {contactMethods.map((m) => (
-              <div
-                key={m.label}
-                className="flex gap-5 items-center bg-dark2 border border-white/[0.06] px-6 py-5 transition-colors duration-300 hover:border-red/30"
-              >
-                <div className="text-[1.5rem] flex-shrink-0">{m.icon}</div>
-                <div>
-                  <div className="font-barlow-cond text-[0.75rem] font-semibold tracking-[3px] uppercase text-muted">
-                    {m.label}
+            {contactMethods.map((m) => {
+              const inner = (
+                <>
+                  <div className="text-[1.5rem] flex-shrink-0">{m.icon}</div>
+                  <div>
+                    <div className="font-barlow-cond text-[0.75rem] font-semibold tracking-[3px] uppercase text-muted">
+                      {m.label}
+                    </div>
+                    <div className="text-[1rem] text-cream mt-0.5">{m.value}</div>
                   </div>
-                  <div className="text-[1rem] text-cream mt-0.5">{m.value}</div>
+                </>
+              );
+              const baseClass =
+                "flex gap-5 items-center bg-dark2 border border-white/[0.06] px-6 py-5 transition-colors duration-300";
+              if (m.href) {
+                return (
+                  <a
+                    key={m.label}
+                    href={m.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${m.label}: open address in Google Maps`}
+                    className={`${baseClass} no-underline text-inherit cursor-pointer hover:border-red/60 hover:bg-dark3`}
+                  >
+                    {inner}
+                  </a>
+                );
+              }
+              return (
+                <div key={m.label} className={`${baseClass} hover:border-red/30`}>
+                  {inner}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <button
