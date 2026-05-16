@@ -45,6 +45,13 @@ export default function Contact() {
     setTimeout(() => setSent(false), 3000);
   }
 
+  function handleWhatsAppClick() {
+    const phone = ["972", "58", "40", "92", "211"].join("");
+    const message = "שלום איתי אשמח לשמוע עוד לגבי האימונים";
+    const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
   return (
     <section id="contact" className="py-32 px-[5vw] bg-dark">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 max-w-[1200px] mx-auto items-start">
@@ -85,17 +92,17 @@ export default function Contact() {
             ))}
           </div>
 
-          <a
-            href="https://wa.me/97250XXXXXXX?text=Hi%20Team%20Gershon!%20I'm%20interested%20in%20joining%20your%20gym."
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            id="whatsapp-cta"
+            onClick={handleWhatsAppClick}
             aria-label="Chat with Team Gershon on WhatsApp"
-            className="btn-clip flex items-center gap-4 mt-8 px-8 py-5 no-underline font-barlow-cond text-[1.1rem] font-bold tracking-[2px] uppercase text-white transition-all duration-200 hover:-translate-y-0.5"
+            className="btn-clip flex items-center gap-4 mt-8 px-8 py-5 border-none cursor-pointer font-barlow-cond text-[1.1rem] font-bold tracking-[2px] uppercase text-white transition-all duration-200 hover:-translate-y-0.5"
             style={{ background: "#128C7E" }}
           >
             <WhatsAppIcon />
             Chat on WhatsApp
-          </a>
+          </button>
 
           {/* Social media buttons */}
           <div className="flex gap-3 mt-3">
