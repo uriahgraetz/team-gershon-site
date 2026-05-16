@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useReveal } from "@/hooks/useReveal";
 
 const contactMethods = [
-  { icon: "📍", label: "Location", value: "Tel Aviv, Israel" },
+  { icon: "📍", label: "Location", value: "רחוב רבי צדוק 12 (ביה״ס גבעת גונן), ירושלים" },
   { icon: "📞", label: "Phone",    value: "+972 50 XXX XXXX" },
   { icon: "📧", label: "Email",    value: "info@teamgershon.com" },
   { icon: "⏰", label: "Hours",    value: "Sun–Thu 6am–10pm · Fri 6am–2pm" },
