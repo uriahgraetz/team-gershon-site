@@ -57,11 +57,38 @@ function WhatsAppIcon() {
   );
 }
 
+type FormState = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  experience: string;
+  message: string;
+  website: string; // honeypot — must remain empty
+};
+
+const EMPTY_FORM: FormState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  experience: "",
+  message: "",
+  website: "",
+};
+
+type SubmitStatus = "idle" | "loading" | "success" | "error";
+
 export default function Contact() {
-  const [sent, setSent] = useState(false);
+  const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [status, setStatus] = useState<SubmitStatus>("idle");
   const [copiedLabel, setCopiedLabel] = useState<string | null>(null);
   const infoRef = useReveal<HTMLDivElement>();
   const formRef = useReveal<HTMLDivElement>();
+
+  function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }
 
   async function handleCopy(label: string, value: string) {
     try {
@@ -74,10 +101,35 @@ export default function Contact() {
     }
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSent(true);
-    setTimeout(() => setSent(false), 3000);
+    if (status === "loading") return;
+    setStatus("loading");
+
+    const name = `${form.firstName} ${form.lastName}`.trim();
+    const payload = {
+      name,
+      email: form.email.trim(),
+      phone: form.phone.trim(),
+      message: form.message.trim(),
+      experience: form.experience || undefined,
+      website: form.website, // honeypot
+    };
+
+    try {
+      const res = await fetch("/api/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setForm(EMPTY_FORM);
+      setStatus("success");
+      setTimeout(() => setStatus("idle"), 5000);
+    } catch (err) {
+      console.error("Contact form submission failed:", err);
+      setStatus("error");
+    }
   }
 
   function handleWhatsAppClick() {
@@ -263,18 +315,54 @@ export default function Contact() {
           <div className="font-bebas text-[2rem] tracking-[1px] text-cream mb-6">
             SEND A MESSAGE
           </div>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
             <div className="grid grid-cols-2 gap-4">
-              <FormField label="First Name"   type="text"  placeholder="Your name" />
-              <FormField label="Last Name"    type="text"  placeholder="Last name" />
+              <FormField
+                label="First Name"
+                type="text"
+                placeholder="Your name"
+                value={form.firstName}
+                onChange={(v) => updateField("firstName", v)}
+                required
+                minLength={1}
+                maxLength={40}
+              />
+              <FormField
+                label="Last Name"
+                type="text"
+                placeholder="Last name"
+                value={form.lastName}
+                onChange={(v) => updateField("lastName", v)}
+                required
+                minLength={1}
+                maxLength={40}
+              />
             </div>
-            <FormField label="Email Address" type="email" placeholder="you@email.com" />
-            <FormField label="Phone (Optional)" type="tel" placeholder="+972 50 XXX XXXX" />
+            <FormField
+              label="Email Address"
+              type="email"
+              placeholder="you@email.com"
+              value={form.email}
+              onChange={(v) => updateField("email", v)}
+              required
+              maxLength={120}
+            />
+            <FormField
+              label="Phone"
+              type="tel"
+              placeholder="+972 50 XXX XXXX"
+              value={form.phone}
+              onChange={(v) => updateField("phone", v)}
+              required
+              maxLength={20}
+            />
             <div>
               <label className="font-barlow-cond text-[0.8rem] font-semibold tracking-[3px] uppercase text-muted block mb-2">
                 Experience Level
               </label>
               <select
+                value={form.experience}
+                onChange={(e) => updateField("experience", e.target.value)}
                 className="w-full bg-dark3 border border-white/[0.08] text-cream font-barlow text-[0.95rem] px-3.5 py-3 outline-none cursor-pointer transition-colors duration-200 focus:border-red/50"
               >
                 <option value="">Select your level...</option>
@@ -290,17 +378,70 @@ export default function Contact() {
               </label>
               <textarea
                 rows={4}
+                value={form.message}
+                onChange={(e) => updateField("message", e.target.value)}
                 placeholder="Tell us about your goals or any questions you have..."
+                required
+                maxLength={1000}
                 className="w-full bg-dark3 border border-white/[0.08] text-cream font-barlow text-[0.95rem] px-3.5 py-3 outline-none resize-none transition-colors duration-200 focus:border-red/50 placeholder:text-muted/50"
               />
             </div>
+
+            {/* Honeypot — visually hidden, real users won't fill it; bots usually will */}
+            <div aria-hidden="true" className="absolute w-px h-px overflow-hidden left-[-9999px] top-auto">
+              <label>
+                Website
+                <input
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={form.website}
+                  onChange={(e) => updateField("website", e.target.value)}
+                />
+              </label>
+            </div>
+
             <button
               type="submit"
-              className="w-full mt-2 font-barlow-cond text-[1rem] font-bold tracking-[3px] uppercase text-white py-4 border-none cursor-pointer transition-colors duration-200"
-              style={{ background: sent ? "#1a7a1a" : "#C8102E" }}
+              disabled={status === "loading"}
+              className="w-full mt-2 font-barlow-cond text-[1rem] font-bold tracking-[3px] uppercase text-white py-4 border-none cursor-pointer transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-80"
+              style={{ background: status === "success" ? "#1a7a1a" : "#C8102E" }}
             >
-              {sent ? "✓ Message Sent!" : "Send Message"}
+              {status === "loading"
+                ? "Sending..."
+                : status === "success"
+                ? "✓ Sent"
+                : "Send Message"}
             </button>
+
+            {status === "success" && (
+              <div
+                role="status"
+                aria-live="polite"
+                dir="rtl"
+                className="bg-red/10 border border-red/40 text-cream px-4 py-3 font-barlow text-[0.95rem] text-center"
+              >
+                ההודעה נשלחה בהצלחה!
+              </div>
+            )}
+
+            {status === "error" && (
+              <div
+                role="alert"
+                aria-live="assertive"
+                className="bg-red/10 border border-red/40 text-cream px-4 py-3 font-barlow text-[0.9rem] text-center"
+              >
+                Something went wrong. Please try again, or{" "}
+                <button
+                  type="button"
+                  onClick={handleWhatsAppClick}
+                  className="underline text-red hover:text-red-dark font-semibold"
+                >
+                  message us on WhatsApp
+                </button>{" "}
+                for immediate assistance.
+              </div>
+            )}
           </form>
           <p className="text-[0.8rem] text-muted text-center mt-4">
             We&apos;ll respond within 24 hours. Or chat with us on WhatsApp for instant replies.
@@ -315,10 +456,20 @@ function FormField({
   label,
   type,
   placeholder,
+  value,
+  onChange,
+  required,
+  minLength,
+  maxLength,
 }: {
   label: string;
   type: string;
   placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
 }) {
   return (
     <div>
@@ -328,6 +479,11 @@ function FormField({
       <input
         type={type}
         placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
+        minLength={minLength}
+        maxLength={maxLength}
         className="w-full bg-dark3 border border-white/[0.08] text-cream font-barlow text-[0.95rem] px-3.5 py-3 outline-none transition-colors duration-200 focus:border-red/50 placeholder:text-muted/50"
       />
     </div>
