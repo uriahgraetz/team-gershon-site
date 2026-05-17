@@ -1,10 +1,10 @@
 import { Resend } from "resend";
 import { z } from "zod";
 
-const TO_EMAIL = "Gershonteam@gmail.com";
-// Resend requires a verified sender domain. Until a custom domain is verified
-// in the Resend dashboard, the onboarding sandbox sender is used.
-const FROM_EMAIL = process.env.RESEND_FROM ?? "Team Gershon <onboarding@resend.dev>";
+// TEMP: Resend sandbox mode only delivers to the account owner's email.
+// Restore TO_EMAIL = "Gershonteam@gmail.com" once a domain is verified in Resend.
+const TO_EMAIL = "uriahgraetz@gmail.com";
+const FROM_EMAIL = "onboarding@resend.dev";
 const SUBJECT = "ליד חם הגיע בוא נרתום אותו לעסק";
 
 const FormSchema = z.object({
