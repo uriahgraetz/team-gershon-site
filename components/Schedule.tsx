@@ -17,7 +17,7 @@ const scheduleData: DaySchedule[] = [
     dayHe: "ראשון",
     sport: "Muay Thai",
     sessions: [
-      { time: "17:00–18:00", label: "Kids 8–12", kids: true },
+      { time: "17:00–18:00", label: "Kids 7–11", kids: true },
       { time: "18:00–19:00", label: "Basic" },
       { time: "19:00–20:10", label: "Advanced" },
       { time: "21:10",       label: "Sparring" },
@@ -169,7 +169,12 @@ export default function Schedule() {
                 }
                 return (
                   <li key={`${s.time}-${s.label}`} className={base}>
-                    <span className="text-[0.9rem] text-cream">{s.label}</span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-[0.9rem] text-cream">{s.label}</span>
+                      <span className="font-barlow-cond text-[0.6rem] font-bold tracking-[1px] text-muted border border-white/20 px-1 py-px leading-none">
+                        14+
+                      </span>
+                    </span>
                     <span className="font-barlow text-[0.85rem] text-muted tabular-nums whitespace-nowrap">
                       {s.time}
                     </span>
