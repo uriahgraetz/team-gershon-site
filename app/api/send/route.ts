@@ -1,8 +1,6 @@
 import { Resend } from "resend";
 import { z } from "zod";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const TO_EMAIL = "Gershonteam@gmail.com";
 // Resend requires a verified sender domain. Until a custom domain is verified
 // in the Resend dashboard, the onboarding sandbox sender is used.
@@ -84,10 +82,12 @@ export async function POST(req: Request) {
     const message = stripHtml(data.message);
     const experience = data.experience ? stripHtml(data.experience) : "";
 
-    if (!process.env.RESEND_API_KEY) {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
       console.error("/api/send: RESEND_API_KEY is not set");
       return Response.json({ ok: false }, { status: 500 });
     }
+    const resend = new Resend(apiKey);
 
     const html = `
 <div style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #111; max-width: 600px;">
