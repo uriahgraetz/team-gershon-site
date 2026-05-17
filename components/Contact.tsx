@@ -55,8 +55,8 @@ export default function Contact() {
   }
 
   function handleWhatsAppClick() {
-    const phone = ["972", "58", "40", "92", "211"].join("");
-    const message = "שלום איתי אשמח לשמוע עוד לגבי האימונים";
+    const phone = ["972", "54", "81", "41", "138"].join("");
+    const message = "היי איתי, ראיתי את הפרטים באתר ואשמח לתאם אימון ניסיון.";
     const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
     window.open(url, "_blank", "noopener,noreferrer");
   }
