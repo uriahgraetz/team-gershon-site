@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { useReveal } from "@/hooks/useReveal";
 
-type ContactMethod = { icon: string; label: string; value: string; href?: string };
+type ContactMethod = {
+  icon: string;
+  label: string;
+  value: string;
+  href?: string;
+  copyable?: boolean;
+};
 
 const MAPS_QUERY = encodeURIComponent("רחוב רבי צדוק 12 ירושלים");
 
@@ -15,7 +21,7 @@ const contactMethods: ContactMethod[] = [
     href: `https://www.google.com/maps/search/?api=1&query=${MAPS_QUERY}`,
   },
   { icon: "📞", label: "Phone",    value: "+972 50 XXX XXXX" },
-  { icon: "📧", label: "Email",    value: "info@teamgershon.com" },
+  { icon: "📧", label: "Email",    value: "Gershonteam@gmail.com", copyable: true },
   { icon: "⏰", label: "Hours",    value: "Sun–Thu 6am–10pm · Fri 6am–2pm" },
 ];
 
@@ -53,8 +59,20 @@ function WhatsAppIcon() {
 
 export default function Contact() {
   const [sent, setSent] = useState(false);
+  const [copiedLabel, setCopiedLabel] = useState<string | null>(null);
   const infoRef = useReveal<HTMLDivElement>();
   const formRef = useReveal<HTMLDivElement>();
+
+  async function handleCopy(label: string, value: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedLabel(label);
+      setTimeout(() => setCopiedLabel((curr) => (curr === label ? null : curr)), 2000);
+    } catch (err) {
+      console.error("Clipboard copy failed:", err);
+      alert(`Couldn't copy automatically. Please copy manually:\n\n${value}`);
+    }
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -145,6 +163,37 @@ export default function Contact() {
                       </button>
                     </div>
                   </a>
+                );
+              }
+              if (m.copyable) {
+                const isCopied = copiedLabel === m.label;
+                return (
+                  <button
+                    key={m.label}
+                    type="button"
+                    onClick={() => handleCopy(m.label, m.value)}
+                    aria-label={`Copy ${m.label.toLowerCase()} ${m.value} to clipboard`}
+                    className={`${baseClass} group relative w-full text-left cursor-pointer hover:border-red/60 hover:bg-dark3`}
+                  >
+                    <div className="text-[1.5rem] flex-shrink-0">{m.icon}</div>
+                    <div>
+                      <div className="font-barlow-cond text-[0.75rem] font-semibold tracking-[3px] uppercase text-muted">
+                        {m.label}
+                      </div>
+                      <div className="text-[1rem] text-cream mt-0.5 break-all">{m.value}</div>
+                    </div>
+                    <span
+                      role="status"
+                      aria-live="polite"
+                      className={`pointer-events-none absolute top-2 right-3 font-barlow-cond text-[0.65rem] font-bold tracking-[1.5px] uppercase px-2 py-1 transition-all duration-200 ${
+                        isCopied
+                          ? "opacity-100 bg-red text-cream border border-red"
+                          : "opacity-0 group-hover:opacity-100 bg-dark3 text-cream border border-white/20"
+                      }`}
+                    >
+                      {isCopied ? "Copied!" : "Click to copy"}
+                    </span>
+                  </button>
                 );
               }
               return (
