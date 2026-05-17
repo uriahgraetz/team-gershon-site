@@ -29,7 +29,7 @@ const contactMethods: ContactMethod[] = [
   },
   { icon: "📞", label: "Phone",    value: getPhoneNumber(), copyable: true, copyLabel: "Copy Number" },
   { icon: "📧", label: "Email",    value: "Gershonteam@gmail.com", copyable: true },
-  { icon: "⏰", label: "Hours",    value: "Sun–Thu 6am–10pm · Fri 6am–2pm" },
+  { icon: "⏰", label: "Hours",    value: "Sun–Thu 6pm–9pm" },
 ];
 
 function InstagramIcon() {
