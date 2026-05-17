@@ -2,30 +2,58 @@
 
 import { useReveal } from "@/hooks/useReveal";
 
-const programs = [
+type Program = {
+  icon: string;
+  freq: string;
+  title: string;
+  desc: string;
+  details: string[];
+  popular?: boolean;
+};
+
+const programs: Program[] = [
   {
-    level: "🥊 Beginner",
+    icon: "⏱️",
+    freq: "1 session / week",
+    title: "ESSENTIAL",
+    desc: "The perfect entry point for those looking to start their journey and learn the basics.",
+    details: ["Core mechanics focus", "Flexible schedule"],
+  },
+  {
+    icon: "🥊",
+    freq: "2 sessions / week",
     title: "FOUNDATIONS",
-    desc: "No experience needed. Learn the fundamentals of stance, movement, and basic strikes in a supportive environment.",
-    details: ["3 sessions per week", "Small class sizes (max 12)", "Equipment provided", "All ages welcome"],
+    desc: "Build a rock-solid base with consistent training and fundamental technique drills.",
+    details: ["Skill development", "Guided progression"],
   },
   {
-    level: "⚡ Intermediate",
-    title: "LEVEL UP",
-    desc: "Build on your base with advanced combinations, clinch work, and sparring sessions under expert supervision.",
-    details: ["4–5 sessions per week", "Padwork & sparring", "Muay Thai & boxing tracks", "Strength & conditioning"],
+    icon: "⚡",
+    freq: "3 sessions / week",
+    title: "PERFORMANCE",
+    desc: "Take your training to the next level with increased intensity and tactical workshops.",
+    details: ["Advanced combinations", "Sparring eligibility"],
+    popular: true,
   },
   {
-    level: "🏆 Advanced",
+    icon: "💪",
+    freq: "4 sessions / week",
+    title: "PRO-ATHLETE",
+    desc: "Designed for dedicated practitioners aiming for elite physical and technical conditioning.",
+    details: ["High-intensity drills", "Athlete mindset coaching"],
+  },
+  {
+    icon: "🔥",
+    freq: "5 sessions / week",
     title: "FIGHT CAMP",
-    desc: "Full competition preparation. Strategy, game-planning, and the mental conditioning to perform when it counts.",
-    details: ["Daily training + recovery", "One-on-one coaching", "Fight strategy sessions", "Nutrition guidance"],
+    desc: "The ultimate immersion. Full competition preparation and peak performance training.",
+    details: ["Full access to all classes", "Professional fight prep"],
   },
   {
-    level: "👨‍👩‍👧 Family",
-    title: "KIDS & TEENS",
-    desc: "Safe, fun, and structured martial arts classes that build confidence, discipline, and fitness in young athletes.",
-    details: ["Ages 6–17", "Focus & discipline", "Anti-bullying principles", "Regular gradings"],
+    icon: "🦁",
+    freq: "Ages 6–13",
+    title: "YOUNG LIONS",
+    desc: "Safe and professional classes focusing on discipline, confidence, and martial arts basics.",
+    details: ["Confidence & Discipline", "Strength & Fitness"],
   },
 ];
 
@@ -52,24 +80,41 @@ export default function Programs() {
 
       <div
         ref={gridRef}
-        className="reveal grid gap-6 mt-12 max-w-[1200px]"
-        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}
+        className="reveal grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 max-w-[1200px]"
       >
         {programs.map((p) => (
           <div
             key={p.title}
-            className="relative bg-dark2 border border-white/[0.06] p-10 overflow-hidden transition-all duration-300 hover:border-red/40 hover:-translate-y-1.5 group"
+            className={`relative flex flex-col bg-dark2 border p-10 overflow-hidden transition-all duration-300 hover:-translate-y-1.5 group ${
+              p.popular
+                ? "border-red/50 shadow-[0_0_20px_rgba(200,16,46,0.12)]"
+                : "border-white/[0.06] hover:border-red/40"
+            }`}
           >
             {/* Bottom accent bar */}
-            <div className="absolute bottom-0 left-0 right-0 h-[3px] scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"
+            <div
+              className="absolute bottom-0 left-0 right-0 h-[3px] scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"
               style={{ background: "linear-gradient(90deg, #C8102E, transparent)" }}
             />
-            <div className="font-barlow-cond text-[0.75rem] font-semibold tracking-[4px] uppercase text-gold mb-4">
-              {p.level}
+
+            {/* Most Popular badge */}
+            {p.popular && (
+              <div className="absolute top-0 right-0 font-barlow-cond text-[0.65rem] font-bold tracking-[2px] uppercase bg-red text-cream px-3 py-1.5">
+                Most Popular
+              </div>
+            )}
+
+            <div className="font-bebas text-[2.2rem] leading-none mb-1">{p.icon}</div>
+
+            <div className="font-barlow-cond text-[0.72rem] font-semibold tracking-[3px] uppercase text-gold mb-3 mt-2">
+              {p.freq}
             </div>
+
             <div className="font-bebas text-[2rem] tracking-[1px] text-cream mb-4">{p.title}</div>
+
             <p className="text-[0.9rem] text-muted leading-[1.7] mb-6">{p.desc}</p>
-            <ul className="list-none space-y-0">
+
+            <ul className="list-none mt-auto">
               {p.details.map((d) => (
                 <li
                   key={d}
