@@ -69,6 +69,28 @@ export default function Contact() {
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
+  function handleFacebookClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    const httpsUrl = "https://www.facebook.com/TeamGershonOfficial";
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) return; // desktop: let the default <a target="_blank"> behavior run
+
+    e.preventDefault();
+    const deepLink = "fb://facewebmodal/f?href=" + encodeURIComponent(httpsUrl);
+
+    // If the FB app isn't installed, the deep link won't navigate — fall back to web.
+    const fallback = window.setTimeout(() => {
+      window.location.href = httpsUrl;
+    }, 1500);
+
+    // If the app opens, the page becomes hidden — cancel the fallback.
+    const onVisibilityChange = () => {
+      if (document.hidden) window.clearTimeout(fallback);
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange, { once: true });
+
+    window.location.href = deepLink;
+  }
+
   return (
     <section id="contact" className="py-32 px-[5vw] bg-dark">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 max-w-[1200px] mx-auto items-start">
@@ -177,6 +199,7 @@ export default function Contact() {
               href="https://www.facebook.com/TeamGershonOfficial"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={handleFacebookClick}
               aria-label="Team Gershon on Facebook"
               className="btn-clip flex items-center gap-3 flex-1 justify-center px-6 py-4 no-underline font-barlow-cond text-[0.95rem] font-bold tracking-[2px] uppercase text-white border border-white/20 transition-all duration-200 hover:border-[#1877F2] hover:bg-[#1877F2]/10 hover:-translate-y-0.5"
             >
