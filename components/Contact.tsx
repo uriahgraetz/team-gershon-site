@@ -86,19 +86,8 @@ export default function Contact() {
 
           <div className="mt-10 flex flex-col gap-5">
             {contactMethods.map((m) => {
-              const inner = (
-                <>
-                  <div className="text-[1.5rem] flex-shrink-0">{m.icon}</div>
-                  <div>
-                    <div className="font-barlow-cond text-[0.75rem] font-semibold tracking-[3px] uppercase text-muted">
-                      {m.label}
-                    </div>
-                    <div className="text-[1rem] text-cream mt-0.5">{m.value}</div>
-                  </div>
-                </>
-              );
               const baseClass =
-                "flex gap-5 items-center bg-dark2 border border-white/[0.06] px-6 py-5 transition-colors duration-300";
+                "flex gap-5 items-center bg-dark2 border border-white/[0.06] px-6 py-5 transition-all duration-300";
               if (m.href) {
                 return (
                   <a
@@ -107,15 +96,36 @@ export default function Contact() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`${m.label}: open address in Google Maps`}
-                    className={`${baseClass} no-underline text-inherit cursor-pointer hover:border-red/60 hover:bg-dark3`}
+                    className={`${baseClass} no-underline text-inherit cursor-pointer hover:border-red/60 hover:bg-dark3 hover:shadow-[0_0_12px_rgba(200,16,46,0.15)]`}
                   >
-                    {inner}
+                    <div className="text-[1.5rem] flex-shrink-0">{m.icon}</div>
+                    <div>
+                      <div className="font-barlow-cond text-[0.75rem] font-semibold tracking-[3px] uppercase text-muted">
+                        {m.label}
+                      </div>
+                      <div className="text-[1rem] text-cream mt-0.5">{m.value}</div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(m.href, "_blank", "noopener,noreferrer");
+                        }}
+                        className="mt-3 font-barlow-cond text-[0.7rem] font-semibold tracking-[2px] uppercase text-white bg-transparent border border-red/60 px-3 py-1.5 cursor-pointer transition-colors duration-200 hover:border-red hover:bg-red/10"
+                      >
+                        Get Directions
+                      </button>
+                    </div>
                   </a>
                 );
               }
               return (
                 <div key={m.label} className={`${baseClass} hover:border-red/30`}>
-                  {inner}
+                  <div className="text-[1.5rem] flex-shrink-0">{m.icon}</div>
+                  <div>
+                    <div className="font-barlow-cond text-[0.75rem] font-semibold tracking-[3px] uppercase text-muted">
+                      {m.label}
+                    </div>
+                    <div className="text-[1rem] text-cream mt-0.5">{m.value}</div>
+                  </div>
                 </div>
               );
             })}
