@@ -9,9 +9,16 @@ type ContactMethod = {
   value: string;
   href?: string;
   copyable?: boolean;
+  copyLabel?: string;
 };
 
 const MAPS_QUERY = encodeURIComponent("רחוב רבי צדוק 12 ירושלים");
+
+// Phone is assembled from parts at render time so the literal number
+// never appears as a single string in the source code (basic anti-scrape).
+function getPhoneNumber(): string {
+  return ["054", "814", "1138"].join("-");
+}
 
 const contactMethods: ContactMethod[] = [
   {
@@ -20,7 +27,7 @@ const contactMethods: ContactMethod[] = [
     value: "רחוב רבי צדוק 12 (ביה״ס גבעת גונן), ירושלים",
     href: `https://www.google.com/maps/search/?api=1&query=${MAPS_QUERY}`,
   },
-  { icon: "📞", label: "Phone",    value: "+972 50 XXX XXXX" },
+  { icon: "📞", label: "Phone",    value: getPhoneNumber(), copyable: true, copyLabel: "Copy Number" },
   { icon: "📧", label: "Email",    value: "Gershonteam@gmail.com", copyable: true },
   { icon: "⏰", label: "Hours",    value: "Sun–Thu 6am–10pm · Fri 6am–2pm" },
 ];
@@ -243,7 +250,7 @@ export default function Contact() {
                           : "opacity-0 group-hover:opacity-100 bg-dark3 text-cream border border-white/20"
                       }`}
                     >
-                      {isCopied ? "Copied!" : "Click to copy"}
+                      {isCopied ? "Copied!" : m.copyLabel ?? "Click to copy"}
                     </span>
                   </button>
                 );
