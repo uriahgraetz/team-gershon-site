@@ -76,7 +76,7 @@ export default function Hero() {
             mass: 0.9,
             delay: 0.25,
           }}
-          className="relative pointer-events-auto w-[65vw] md:w-[75vw] lg:w-[80vw]"
+          className="relative pointer-events-auto w-[92vw] -translate-y-[12%] md:w-[75vw] md:translate-y-0 lg:w-[80vw]"
           style={{
             perspective: 1000,
             aspectRatio: "1131 / 1600",
