@@ -63,25 +63,29 @@ export default function Hero() {
       />
 
       {/* === LAYER 1: Massive centered logo (z-0) — can bleed vertically, clipped by overflow-hidden === */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
-        <motion.div
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{
-            type: "spring",
-            stiffness: 180,
-            damping: 14,
-            mass: 0.9,
-            delay: 0.25,
-          }}
-          className="relative pointer-events-auto w-[92vw] -translate-y-[12%] md:w-[75vw] md:translate-y-0 lg:w-[80vw]"
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        {/* Positioning wrapper — Tailwind transforms live here (not on the motion.div) so they don't fight framer-motion's animated transform. */}
+        <div
+          className="absolute left-1/2 top-[35%] w-[115vw] -translate-x-1/2 -translate-y-1/2 md:top-1/2 md:w-[75vw] lg:w-[80vw]"
           style={{
             perspective: 1000,
             aspectRatio: "1131 / 1600",
           }}
         >
+          <motion.div
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 180,
+              damping: 14,
+              mass: 0.9,
+              delay: 0.25,
+            }}
+            className="relative w-full h-full pointer-events-none md:pointer-events-auto"
+          >
           {/* Static red halo — anchored to the outermost wrapper so it scales with the logo */}
           <div
             aria-hidden="true"
@@ -121,7 +125,7 @@ export default function Hero() {
                   alt="Team Gershon — Muay Thai &amp; Boxing"
                   fill
                   priority
-                  sizes="(max-width: 768px) 65vw, (max-width: 1024px) 75vw, 80vw"
+                  sizes="(max-width: 768px) 115vw, (max-width: 1024px) 75vw, 80vw"
                   className="object-contain select-none pointer-events-none logo-crisp"
                   draggable={false}
                 />
@@ -154,6 +158,7 @@ export default function Hero() {
             </motion.div>
           </motion.div>
         </motion.div>
+        </div>
       </div>
 
       {/* === LAYER 2: Bottom content tray (z-10) — readability gradient + brand + CTAs === */}
