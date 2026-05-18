@@ -1,10 +1,7 @@
 import { Resend } from "resend";
 import { z } from "zod";
 
-// TEMP: Resend sandbox mode only delivers to the account owner's email.
-// Restore TO_EMAIL = "Gershonteam@gmail.com" once a domain is verified in Resend.
-const TO_EMAIL = "uriahgraetz@gmail.com";
-const FROM_EMAIL = "onboarding@resend.dev";
+const FROM_EMAIL = "Team Gershon <office@teamgershon.co.il>";
 const SUBJECT = "ליד חם הגיע בוא נרתום אותו לעסק";
 
 const FormSchema = z.object({
@@ -87,6 +84,11 @@ export async function POST(req: Request) {
       console.error("/api/send: RESEND_API_KEY is not set");
       return Response.json({ ok: false }, { status: 500 });
     }
+    const toEmail = process.env.CONTACT_FORM_RECEIVER;
+    if (!toEmail) {
+      console.error("/api/send: CONTACT_FORM_RECEIVER is not set");
+      return Response.json({ ok: false }, { status: 500 });
+    }
     const resend = new Resend(apiKey);
 
     const html = `
@@ -114,7 +116,7 @@ export async function POST(req: Request) {
 
     const result = await resend.emails.send({
       from: FROM_EMAIL,
-      to: TO_EMAIL,
+      to: toEmail,
       replyTo: email,
       subject: SUBJECT,
       html,
