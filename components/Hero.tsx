@@ -117,12 +117,12 @@ export default function Hero() {
               {/* Pulsing red drop-shadow glow */}
               <div className="relative w-full h-full animate-logo-glow">
                 <Image
-                  src="/images/team-gershon-logo.png"
+                  src="/images/team-gershon-logo-highres.png"
                   alt="Team Gershon — Muay Thai &amp; Boxing"
                   fill
                   priority
                   sizes="(max-width: 768px) 65vw, (max-width: 1024px) 75vw, 80vw"
-                  className="object-contain select-none pointer-events-none"
+                  className="object-contain select-none pointer-events-none logo-crisp"
                   draggable={false}
                 />
 
@@ -131,8 +131,8 @@ export default function Hero() {
                   aria-hidden="true"
                   className="absolute inset-0 overflow-hidden pointer-events-none"
                   style={{
-                    WebkitMaskImage: "url(/images/team-gershon-logo.png)",
-                    maskImage: "url(/images/team-gershon-logo.png)",
+                    WebkitMaskImage: "url(/images/team-gershon-logo-highres.png)",
+                    maskImage: "url(/images/team-gershon-logo-highres.png)",
                     WebkitMaskRepeat: "no-repeat",
                     maskRepeat: "no-repeat",
                     WebkitMaskSize: "contain",

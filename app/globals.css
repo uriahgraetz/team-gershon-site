@@ -77,6 +77,12 @@
   transform: translateY(0);
 }
 
+/* ── Logo sharpness — progressive fallback chain; browsers pick the last one they understand ── */
+.logo-crisp {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+}
+
 /* ── Angled-corner button clip ── */
 .btn-clip {
   clip-path: polygon(
