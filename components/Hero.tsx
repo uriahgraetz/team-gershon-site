@@ -1,3 +1,14 @@
+"use client";
+
+import Image from "next/image";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useReducedMotion,
+} from "framer-motion";
+
 const stats = [
   { num: "10+",  label: "Years of Excellence" },
   { num: "500+", label: "Athletes Trained" },
@@ -6,6 +17,29 @@ const stats = [
 ];
 
 export default function Hero() {
+  const prefersReducedMotion = useReducedMotion();
+
+  // Mouse-tracked tilt — motion values avoid re-renders on every mousemove.
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springConfig = { stiffness: 150, damping: 18, mass: 0.6 };
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-10, 10]), springConfig);
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), springConfig);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (prefersReducedMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(px);
+    mouseY.set(py);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
   return (
     <section
       id="home"
@@ -13,7 +47,7 @@ export default function Hero() {
     >
       {/* Background */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 z-0"
         style={{
           background: `
             radial-gradient(ellipse 60% 70% at 70% 50%, rgba(200,16,46,0.18) 0%, transparent 70%),
@@ -25,7 +59,7 @@ export default function Hero() {
 
       {/* Grid overlay */}
       <div
-        className="absolute inset-0 opacity-[0.04]"
+        className="absolute inset-0 z-0 opacity-[0.04]"
         style={{
           backgroundImage: `
             linear-gradient(#C8102E 1px, transparent 1px),
@@ -35,20 +69,95 @@ export default function Hero() {
         }}
       />
 
-      {/* Content */}
+      {/* Content — sits above background; navbar (z-50) still wins over this z-10 */}
       <div className="relative z-10 text-center px-[5vw] max-w-[1000px] w-full">
         <p className="anim-d1 font-barlow-cond text-[0.9rem] font-semibold tracking-[5px] uppercase text-red mb-6">
-          Muay Thai &amp; Boxing — Est. Tel Aviv
+          Muay Thai &amp; Boxing — Est. Jerusalem
         </p>
 
-        <h1
-          className="anim-d2 font-bebas leading-[0.88] tracking-[4px] text-cream"
-          style={{ fontSize: "clamp(5rem, 14vw, 13rem)" }}
+        {/* === LOGO — replaces previous <h1> === */}
+        <motion.div
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            type: "spring",
+            stiffness: 180,
+            damping: 14,
+            mass: 0.9,
+            delay: 0.25,
+          }}
+          style={{ perspective: 1000 }}
+          className="mx-auto"
         >
-          TEAM
-          <br />
-          <span className="text-red block">GERSHON</span>
-        </h1>
+          {/* Floating wrapper — gentle infinite Y bob */}
+          <motion.div
+            animate={prefersReducedMotion ? undefined : { y: [0, -5, 0, 4, 0] }}
+            transition={
+              prefersReducedMotion
+                ? undefined
+                : { duration: 6, ease: "easeInOut", repeat: Infinity }
+            }
+            className="relative mx-auto"
+            style={{
+              width: "clamp(260px, 42vw, 520px)",
+              aspectRatio: "1131 / 1600",
+            }}
+          >
+            {/* Tilt layer — responds to mouse via motion values */}
+            <motion.div
+              style={{
+                rotateX,
+                rotateY,
+                transformStyle: "preserve-3d",
+                willChange: "transform",
+              }}
+              className="relative w-full h-full"
+            >
+              {/* Pulsing red backglow — applied via CSS keyframe to a wrapper
+                  so the drop-shadow filter targets the logo's alpha mask. */}
+              <div className="relative w-full h-full animate-logo-glow">
+                <Image
+                  src="/images/team-gershon-logo.png"
+                  alt="Team Gershon — Muay Thai &amp; Boxing"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 80vw, 520px"
+                  className="object-contain select-none pointer-events-none"
+                  draggable={false}
+                />
+
+                {/* Metallic sheen — a diagonal white gradient strip that
+                    sweeps across the logo. clip-path uses the image as a mask
+                    via overflow + mix-blend so it only shows on the artwork. */}
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 overflow-hidden pointer-events-none"
+                  style={{
+                    WebkitMaskImage: "url(/images/team-gershon-logo.png)",
+                    maskImage: "url(/images/team-gershon-logo.png)",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskSize: "contain",
+                    maskSize: "contain",
+                    WebkitMaskPosition: "center",
+                    maskPosition: "center",
+                  }}
+                >
+                  <div
+                    className="absolute top-0 left-0 h-full w-1/3 animate-logo-sheen"
+                    style={{
+                      background:
+                        "linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.0) 30%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0.0) 70%, transparent 100%)",
+                      mixBlendMode: "screen",
+                    }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
 
         <p className="anim-d3 text-[1.15rem] font-light text-muted max-w-[520px] mx-auto mt-8 tracking-[0.5px]">
           Where champions are forged. Elite Muay Thai and boxing training for
@@ -86,7 +195,7 @@ export default function Hero() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="anim-d6 absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+      <div className="anim-d6 absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10">
         <span className="font-barlow-cond text-[0.7rem] tracking-[3px] uppercase text-muted">
           Scroll
         </span>

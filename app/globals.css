@@ -24,6 +24,8 @@
   --animate-slow-spin:     slowSpin 20s linear infinite;
   --animate-slow-spin-rev: slowSpinRev 20s linear infinite;
   --animate-blink:         blink 2s infinite;
+  --animate-logo-sheen:    logoSheen 5s ease-in-out infinite;
+  --animate-logo-glow:     logoGlow 3.2s ease-in-out infinite;
 }
 
 @keyframes fadeUp {
@@ -45,6 +47,23 @@
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.3; }
+}
+@keyframes logoSheen {
+  0%        { transform: translateX(-120%) skewX(-20deg); opacity: 0; }
+  10%       { opacity: 0.55; }
+  45%, 100% { transform: translateX(220%) skewX(-20deg); opacity: 0; }
+}
+@keyframes logoGlow {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 22px rgba(200, 16, 46, 0.35))
+      drop-shadow(0 0 50px rgba(200, 16, 46, 0.18));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 38px rgba(200, 16, 46, 0.7))
+      drop-shadow(0 0 90px rgba(200, 16, 46, 0.4));
+  }
 }
 
 /* ── Scroll-reveal ── */
