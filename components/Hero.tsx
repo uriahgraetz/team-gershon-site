@@ -9,13 +9,6 @@ import {
   useReducedMotion,
 } from "framer-motion";
 
-const stats = [
-  { num: "10+",  label: "Years of Excellence" },
-  { num: "500+", label: "Athletes Trained" },
-  { num: "3",    label: "Disciplines" },
-  { num: "7",    label: "Days a Week" },
-];
-
 export default function Hero() {
   const prefersReducedMotion = useReducedMotion();
 
@@ -43,7 +36,7 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="min-h-screen flex items-center justify-center relative overflow-hidden pt-[72px]"
+      className="h-screen min-h-[640px] flex flex-col relative overflow-hidden pt-[72px]"
     >
       {/* Background */}
       <div
@@ -69,9 +62,9 @@ export default function Hero() {
         }}
       />
 
-      {/* Content — sits above background; navbar (z-50) still wins over this z-10 */}
-      <div className="relative z-10 text-center px-[5vw] max-w-[1000px] w-full">
-        {/* === LOGO — dominant centerpiece === */}
+      {/* Content — flex column so logo + brand center in remaining space and CTAs pin lower */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-[5vw] max-w-[1000px] w-full mx-auto pb-10">
+        {/* === LOGO — height-first sizing so it never exceeds 65vh === */}
         <motion.div
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
@@ -85,8 +78,20 @@ export default function Hero() {
             delay: 0.25,
           }}
           style={{ perspective: 1000 }}
-          className="mx-auto"
+          className="relative mx-auto"
         >
+          {/* Static red halo — anchors the logo to the dark backdrop */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 -z-10 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, rgba(200,16,46,0.45) 0%, rgba(139,0,0,0.22) 35%, transparent 70%)",
+              transform: "scale(1.45)",
+              filter: "blur(28px)",
+            }}
+          />
+
           {/* Floating wrapper — gentle infinite Y bob */}
           <motion.div
             animate={prefersReducedMotion ? undefined : { y: [0, -5, 0, 4, 0] }}
@@ -97,7 +102,7 @@ export default function Hero() {
             }
             className="relative mx-auto"
             style={{
-              width: "clamp(320px, 68vw, 880px)",
+              height: "min(62vh, 620px)",
               aspectRatio: "1131 / 1600",
             }}
           >
@@ -119,14 +124,12 @@ export default function Hero() {
                   alt="Team Gershon — Muay Thai &amp; Boxing"
                   fill
                   priority
-                  sizes="(max-width: 768px) 90vw, 880px"
+                  sizes="(max-width: 768px) 70vw, 480px"
                   className="object-contain select-none pointer-events-none"
                   draggable={false}
                 />
 
-                {/* Metallic sheen — a diagonal white gradient strip that
-                    sweeps across the logo. clip-path uses the image as a mask
-                    via overflow + mix-blend so it only shows on the artwork. */}
+                {/* Metallic sheen — masked to the logo's alpha so the highlight only shows on artwork. */}
                 <div
                   aria-hidden="true"
                   className="absolute inset-0 overflow-hidden pointer-events-none"
@@ -155,22 +158,22 @@ export default function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* Single industrial statement line — three pillars, equal weight */}
+        {/* Statement line — pillars wrap at middots, never mid-word */}
         <motion.h1
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.85, ease: "easeOut" }}
-          className="font-bebas font-black text-cream uppercase tracking-widest leading-none mt-16 md:mt-24 lg:mt-28"
-          style={{ fontSize: "clamp(2rem, 5.4vw, 4rem)" }}
+          className="font-bebas font-black text-cream uppercase tracking-widest leading-none mt-6 sm:mt-8 md:mt-14 lg:mt-16"
+          style={{ fontSize: "clamp(1.5rem, 5vw, 4rem)" }}
         >
-          Muay Thai
-          <span className="text-red mx-3 md:mx-5" aria-hidden="true">·</span>
-          Boxing
-          <span className="text-red mx-3 md:mx-5" aria-hidden="true">·</span>
-          Jerusalem
+          <span className="whitespace-nowrap">Muay Thai</span>
+          <span className="text-red mx-2 sm:mx-3 md:mx-5" aria-hidden="true">·</span>
+          <span className="whitespace-nowrap">Boxing</span>
+          <span className="text-red mx-2 sm:mx-3 md:mx-5" aria-hidden="true">·</span>
+          <span className="whitespace-nowrap">Jerusalem</span>
         </motion.h1>
 
-        <div className="anim-d4 flex gap-4 justify-center flex-wrap mt-14 md:mt-20">
+        <div className="anim-d4 flex gap-4 justify-center flex-wrap mt-8 md:mt-12">
           <a
             href="#contact"
             className="btn-clip font-barlow-cond text-[1rem] font-bold tracking-[3px] uppercase bg-red text-cream px-10 py-4 no-underline transition-all duration-200 hover:bg-red-dark hover:-translate-y-0.5"
@@ -184,29 +187,15 @@ export default function Hero() {
             View Programs
           </a>
         </div>
-
-        {/* Stats */}
-        <div className="anim-d5 flex justify-center gap-16 mt-20 pt-12 border-t border-white/[0.07] flex-wrap">
-          {stats.map((s) => (
-            <div key={s.label} className="text-center">
-              <div className="font-bebas text-[3.5rem] text-red leading-none">
-                {s.num}
-              </div>
-              <div className="font-barlow-cond text-[0.8rem] font-semibold tracking-[3px] uppercase text-muted mt-1">
-                {s.label}
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* Scroll indicator */}
-      <div className="anim-d6 absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10">
+      <div className="anim-d6 absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10">
         <span className="font-barlow-cond text-[0.7rem] tracking-[3px] uppercase text-muted">
           Scroll
         </span>
         <div
-          className="w-px h-[50px] animate-scroll-pulse"
+          className="w-px h-[40px] md:h-[50px] animate-scroll-pulse"
           style={{ background: "linear-gradient(to bottom, #C8102E, transparent)" }}
         />
       </div>
