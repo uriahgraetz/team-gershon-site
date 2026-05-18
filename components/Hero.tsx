@@ -71,11 +71,7 @@ export default function Hero() {
 
       {/* Content — sits above background; navbar (z-50) still wins over this z-10 */}
       <div className="relative z-10 text-center px-[5vw] max-w-[1000px] w-full">
-        <p className="anim-d1 font-barlow-cond text-[0.9rem] font-semibold tracking-[5px] uppercase text-red mb-6">
-          Muay Thai &amp; Boxing — Est. Jerusalem
-        </p>
-
-        {/* === LOGO — replaces previous <h1> === */}
+        {/* === LOGO — dominant centerpiece === */}
         <motion.div
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
@@ -101,7 +97,7 @@ export default function Hero() {
             }
             className="relative mx-auto"
             style={{
-              width: "clamp(260px, 42vw, 520px)",
+              width: "clamp(320px, 68vw, 880px)",
               aspectRatio: "1131 / 1600",
             }}
           >
@@ -123,7 +119,7 @@ export default function Hero() {
                   alt="Team Gershon — Muay Thai &amp; Boxing"
                   fill
                   priority
-                  sizes="(max-width: 768px) 80vw, 520px"
+                  sizes="(max-width: 768px) 90vw, 880px"
                   className="object-contain select-none pointer-events-none"
                   draggable={false}
                 />
@@ -159,12 +155,22 @@ export default function Hero() {
           </motion.div>
         </motion.div>
 
-        <p className="anim-d3 text-[1.15rem] font-light text-muted max-w-[520px] mx-auto mt-8 tracking-[0.5px]">
-          Where champions are forged. Elite Muay Thai and boxing training for
-          all levels — from beginners to competitive fighters.
-        </p>
+        {/* Single industrial statement line — three pillars, equal weight */}
+        <motion.h1
+          initial={{ opacity: 0, y: 28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.85, ease: "easeOut" }}
+          className="font-bebas font-black text-cream uppercase tracking-widest leading-none mt-16 md:mt-24 lg:mt-28"
+          style={{ fontSize: "clamp(2rem, 5.4vw, 4rem)" }}
+        >
+          Muay Thai
+          <span className="text-red mx-3 md:mx-5" aria-hidden="true">·</span>
+          Boxing
+          <span className="text-red mx-3 md:mx-5" aria-hidden="true">·</span>
+          Jerusalem
+        </motion.h1>
 
-        <div className="anim-d4 flex gap-4 justify-center flex-wrap mt-12">
+        <div className="anim-d4 flex gap-4 justify-center flex-wrap mt-14 md:mt-20">
           <a
             href="#contact"
             className="btn-clip font-barlow-cond text-[1rem] font-bold tracking-[3px] uppercase bg-red text-cream px-10 py-4 no-underline transition-all duration-200 hover:bg-red-dark hover:-translate-y-0.5"

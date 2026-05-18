@@ -56,13 +56,13 @@
 @keyframes logoGlow {
   0%, 100% {
     filter:
-      drop-shadow(0 0 22px rgba(200, 16, 46, 0.35))
-      drop-shadow(0 0 50px rgba(200, 16, 46, 0.18));
+      drop-shadow(0 0 32px rgba(200, 16, 46, 0.4))
+      drop-shadow(0 0 75px rgba(200, 16, 46, 0.22));
   }
   50% {
     filter:
-      drop-shadow(0 0 38px rgba(200, 16, 46, 0.7))
-      drop-shadow(0 0 90px rgba(200, 16, 46, 0.4));
+      drop-shadow(0 0 58px rgba(200, 16, 46, 0.78))
+      drop-shadow(0 0 135px rgba(200, 16, 46, 0.45));
   }
 }
 
