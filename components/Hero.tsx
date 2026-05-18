@@ -36,9 +36,9 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="h-screen min-h-[640px] flex flex-col relative overflow-hidden pt-[72px]"
+      className="relative w-full h-screen overflow-hidden bg-black-deep"
     >
-      {/* Background */}
+      {/* Ambient red/gold radial bloom + diagonal black gradient */}
       <div
         className="absolute inset-0 z-0"
         style={{
@@ -50,7 +50,7 @@ export default function Hero() {
         }}
       />
 
-      {/* Grid overlay */}
+      {/* Faint red grid overlay */}
       <div
         className="absolute inset-0 z-0 opacity-[0.04]"
         style={{
@@ -62,9 +62,8 @@ export default function Hero() {
         }}
       />
 
-      {/* Content stack — logo at top, brand pinned tight to logo, CTAs pushed to bottom */}
-      <div className="relative z-10 flex-1 flex flex-col items-center text-center px-[5vw] max-w-[1200px] w-full mx-auto pb-16 md:pb-24 min-h-0">
-        {/* === LOGO — height-first, scales up on desktop === */}
+      {/* === LAYER 1: Massive centered logo (z-0) — can bleed vertically, clipped by overflow-hidden === */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
         <motion.div
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
@@ -77,25 +76,25 @@ export default function Hero() {
             mass: 0.9,
             delay: 0.25,
           }}
-          className="relative mx-auto shrink min-h-0 h-[min(58vh,540px)] md:h-[min(78vh,820px)] lg:h-[min(80vh,1000px)]"
+          className="relative pointer-events-auto w-[65vw] md:w-[75vw] lg:w-[80vw]"
           style={{
             perspective: 1000,
             aspectRatio: "1131 / 1600",
           }}
         >
-          {/* Static red halo — sized to the outermost wrapper so it scales with the logo */}
+          {/* Static red halo — anchored to the outermost wrapper so it scales with the logo */}
           <div
             aria-hidden="true"
             className="absolute inset-0 -z-10 pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse at center, rgba(200,16,46,0.45) 0%, rgba(139,0,0,0.22) 35%, transparent 70%)",
-              transform: "scale(1.4)",
-              filter: "blur(32px)",
+                "radial-gradient(ellipse at center, rgba(200,16,46,0.42) 0%, rgba(139,0,0,0.20) 35%, transparent 70%)",
+              transform: "scale(1.25)",
+              filter: "blur(40px)",
             }}
           />
 
-          {/* Floating wrapper — fills outermost, gentle infinite Y bob */}
+          {/* Floating wrapper — infinite Y bob */}
           <motion.div
             animate={prefersReducedMotion ? undefined : { y: [0, -5, 0, 4, 0] }}
             transition={
@@ -105,7 +104,7 @@ export default function Hero() {
             }
             className="relative w-full h-full"
           >
-            {/* Tilt layer — responds to mouse via motion values */}
+            {/* 3D tilt layer */}
             <motion.div
               style={{
                 rotateX,
@@ -115,14 +114,14 @@ export default function Hero() {
               }}
               className="relative w-full h-full"
             >
-              {/* Pulsing red backglow */}
+              {/* Pulsing red drop-shadow glow */}
               <div className="relative w-full h-full animate-logo-glow">
                 <Image
                   src="/images/team-gershon-logo.png"
                   alt="Team Gershon — Muay Thai &amp; Boxing"
                   fill
                   priority
-                  sizes="(max-width: 768px) 70vw, (max-width: 1024px) 50vw, 720px"
+                  sizes="(max-width: 768px) 65vw, (max-width: 1024px) 75vw, 80vw"
                   className="object-contain select-none pointer-events-none"
                   draggable={false}
                 />
@@ -155,13 +154,22 @@ export default function Hero() {
             </motion.div>
           </motion.div>
         </motion.div>
+      </div>
 
-        {/* Statement line — pinned tight to the bottom of the logo */}
+      {/* === LAYER 2: Bottom content tray (z-10) — readability gradient + brand + CTAs === */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 h-[40vh] flex flex-col items-center justify-end px-[5vw] pb-12 md:pb-16">
+        {/* Readability gradient — covers bottom 40% of viewport so text stays legible over the logo */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 bg-gradient-to-t from-black-deep via-black-deep/60 to-transparent"
+        />
+
+        {/* Statement line — pillars stay tight, wrap at middots on narrow phones */}
         <motion.h1
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.85, ease: "easeOut" }}
-          className="font-bebas font-black text-cream uppercase tracking-widest leading-none shrink-0 mt-4 sm:mt-5 md:mt-6 lg:mt-8"
+          className="font-bebas font-black text-cream uppercase tracking-widest leading-none text-center"
           style={{ fontSize: "clamp(1.5rem, 5vw, 4rem)" }}
         >
           <span className="whitespace-nowrap">Muay Thai</span>
@@ -171,11 +179,8 @@ export default function Hero() {
           <span className="whitespace-nowrap">Jerusalem</span>
         </motion.h1>
 
-        {/* Flex spacer — pushes CTAs toward the bottom while keeping brand tight to logo */}
-        <div className="flex-1 min-h-[16px]" />
-
-        {/* CTAs — pinned near the bottom of the viewport */}
-        <div className="anim-d4 flex gap-4 justify-center flex-wrap shrink-0">
+        {/* CTAs */}
+        <div className="anim-d4 flex gap-4 justify-center flex-wrap mt-6 md:mt-8">
           <a
             href="#contact"
             className="btn-clip font-barlow-cond text-[1rem] font-bold tracking-[3px] uppercase bg-red text-cream px-10 py-4 no-underline transition-all duration-200 hover:bg-red-dark hover:-translate-y-0.5"
@@ -191,8 +196,8 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Scroll indicator — desktop only (hidden on mobile per spec) */}
-      <div className="hidden md:flex anim-d6 absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex-col items-center gap-2 z-10">
+      {/* Scroll indicator — desktop only, parked in the bottom-right corner so it doesn't compete with the centered CTAs */}
+      <div className="hidden md:flex anim-d6 absolute bottom-6 right-6 lg:right-10 flex-col items-center gap-2 z-10 pointer-events-none">
         <span className="font-barlow-cond text-[0.7rem] tracking-[3px] uppercase text-muted">
           Scroll
         </span>
