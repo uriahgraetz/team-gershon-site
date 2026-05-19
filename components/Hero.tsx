@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import Image from "next/image";
 import {
   motion,
@@ -8,8 +9,9 @@ import {
   useTransform,
   useReducedMotion,
 } from "framer-motion";
+import type { Dictionary } from "@/app/[lang]/getDictionary";
 
-export default function Hero() {
+export default function Hero({ dict }: { dict: Dictionary["hero"] }) {
   const prefersReducedMotion = useReducedMotion();
 
   // Mouse-tracked tilt — motion values avoid re-renders on every mousemove.
@@ -122,7 +124,7 @@ export default function Hero() {
               <div className="relative w-full h-full animate-logo-glow">
                 <Image
                   src="/images/team-gershon-logo-highres.png"
-                  alt="Team Gershon — Muay Thai &amp; Boxing"
+                  alt={dict.logoAlt}
                   fill
                   priority
                   sizes="(max-width: 768px) 115vw, (max-width: 1024px) 75vw, 80vw"
@@ -162,14 +164,14 @@ export default function Hero() {
       </div>
 
       {/* === LAYER 2: Bottom content tray (z-10) — readability gradient + brand + CTAs === */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 h-[40vh] flex flex-col items-center justify-end px-[5vw] pb-12 md:pb-16">
+      <div className="absolute bottom-0 inset-x-0 z-10 h-[40vh] flex flex-col items-center justify-end px-[5vw] pb-12 md:pb-16">
         {/* Readability gradient — covers bottom 40% of viewport so text stays legible over the logo */}
         <div
           aria-hidden="true"
           className="absolute inset-0 -z-10 bg-gradient-to-t from-black-deep via-black-deep/60 to-transparent"
         />
 
-        {/* Statement line — pillars stay tight, wrap at middots on narrow phones */}
+        {/* Statement line — pillars from dict, middots interleaved */}
         <motion.h1
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
@@ -177,11 +179,14 @@ export default function Hero() {
           className="font-bebas font-black text-cream uppercase tracking-widest leading-none text-center"
           style={{ fontSize: "clamp(1.5rem, 5vw, 4rem)" }}
         >
-          <span className="whitespace-nowrap">Muay Thai</span>
-          <span className="text-red mx-2 sm:mx-3 md:mx-5" aria-hidden="true">·</span>
-          <span className="whitespace-nowrap">Boxing</span>
-          <span className="text-red mx-2 sm:mx-3 md:mx-5" aria-hidden="true">·</span>
-          <span className="whitespace-nowrap">Jerusalem</span>
+          {dict.pillars.map((pillar, i) => (
+            <Fragment key={pillar}>
+              <span className="whitespace-nowrap">{pillar}</span>
+              {i < dict.pillars.length - 1 && (
+                <span className="text-red mx-2 sm:mx-3 md:mx-5" aria-hidden="true">·</span>
+              )}
+            </Fragment>
+          ))}
         </motion.h1>
 
         {/* CTAs */}
@@ -190,21 +195,21 @@ export default function Hero() {
             href="#contact"
             className="btn-clip font-barlow-cond text-[1rem] font-bold tracking-[3px] uppercase bg-red text-cream px-10 py-4 no-underline transition-all duration-200 hover:bg-red-dark hover:-translate-y-0.5"
           >
-            Start Training
+            {dict.ctaPrimary}
           </a>
           <a
             href="#programs"
             className="btn-clip font-barlow-cond text-[1rem] font-bold tracking-[3px] uppercase bg-transparent text-cream border border-cream/30 px-10 py-4 no-underline transition-all duration-200 hover:border-red hover:text-red"
           >
-            View Programs
+            {dict.ctaSecondary}
           </a>
         </div>
       </div>
 
-      {/* Scroll indicator — desktop only, parked in the bottom-right corner so it doesn't compete with the centered CTAs */}
-      <div className="hidden md:flex anim-d6 absolute bottom-6 right-6 lg:right-10 flex-col items-center gap-2 z-10 pointer-events-none">
+      {/* Scroll indicator — desktop only, bottom-end corner (right in LTR, left in RTL) so it doesn't compete with the centered CTAs */}
+      <div className="hidden md:flex anim-d6 absolute bottom-6 end-6 lg:end-10 flex-col items-center gap-2 z-10 pointer-events-none">
         <span className="font-barlow-cond text-[0.7rem] tracking-[3px] uppercase text-muted">
-          Scroll
+          {dict.scrollHint}
         </span>
         <div
           className="w-px h-[40px] md:h-[50px] animate-scroll-pulse"

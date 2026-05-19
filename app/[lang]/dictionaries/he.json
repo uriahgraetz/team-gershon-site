@@ -1,0 +1,25 @@
+{
+  "navbar": {
+    "brand": {
+      "team": "טים",
+      "gershon": "גרשון"
+    },
+    "links": {
+      "home": "בית",
+      "about": "אודות",
+      "programs": "תוכניות",
+      "schedule": "לוח זמנים",
+      "gallery": "גלריה",
+      "contact": "צור קשר"
+    },
+    "cta": "הצטרפו עכשיו",
+    "toggleMenu": "תפריט"
+  },
+  "hero": {
+    "logoAlt": "טים גרשון — מואי תאי ואגרוף",
+    "pillars": ["מואי תאי", "אגרוף", "ירושלים"],
+    "ctaPrimary": "התחילו להתאמן",
+    "ctaSecondary": "צפו בתוכניות",
+    "scrollHint": "גלול"
+  }
+}

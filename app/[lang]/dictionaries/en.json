@@ -1,0 +1,25 @@
+{
+  "navbar": {
+    "brand": {
+      "team": "TEAM",
+      "gershon": "GERSHON"
+    },
+    "links": {
+      "home": "Home",
+      "about": "About",
+      "programs": "Programs",
+      "schedule": "Schedule",
+      "gallery": "Gallery",
+      "contact": "Contact"
+    },
+    "cta": "Join Now",
+    "toggleMenu": "Toggle menu"
+  },
+  "hero": {
+    "logoAlt": "Team Gershon — Muay Thai & Boxing",
+    "pillars": ["Muay Thai", "Boxing", "Jerusalem"],
+    "ctaPrimary": "Start Training",
+    "ctaSecondary": "View Programs",
+    "scrollHint": "Scroll"
+  }
+}

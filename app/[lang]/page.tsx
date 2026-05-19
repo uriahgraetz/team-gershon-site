@@ -1,18 +1,24 @@
-import Navbar   from "@/components/Navbar";
-import Hero     from "@/components/Hero";
-import About    from "@/components/About";
+import Navbar from "@/components/Navbar";
+import Hero from "@/components/Hero";
+import About from "@/components/About";
 import Programs from "@/components/Programs";
 import Schedule from "@/components/Schedule";
-import Gallery  from "@/components/Gallery";
-import Contact  from "@/components/Contact";
-import Footer   from "@/components/Footer";
+import Gallery from "@/components/Gallery";
+import Contact from "@/components/Contact";
+import Footer from "@/components/Footer";
+import { notFound } from "next/navigation";
+import { getDictionary, hasLocale } from "./getDictionary";
 
-export default function Home() {
+export default async function Home({ params }: PageProps<"/[lang]">) {
+  const { lang } = await params;
+  if (!hasLocale(lang)) notFound();
+  const dict = await getDictionary(lang);
+
   return (
     <>
-      <Navbar />
+      <Navbar dict={dict.navbar} />
       <main>
-        <Hero />
+        <Hero dict={dict.hero} />
         <div
           aria-hidden
           className="h-px w-full bg-gradient-to-r from-transparent via-red/25 to-transparent"
