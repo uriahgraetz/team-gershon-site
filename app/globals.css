@@ -83,6 +83,21 @@
   image-rendering: high-quality;
 }
 
+/* ── Hide native scrollbars on horizontal carousels (Firefox + IE + WebKit) ── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Horizontal edge fade for scrolling carousels ── */
+.edge-fade-x {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%);
+}
+
 /* ── Angled-corner button clip ── */
 .btn-clip {
   clip-path: polygon(
