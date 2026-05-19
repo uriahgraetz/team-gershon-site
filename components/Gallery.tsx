@@ -63,8 +63,14 @@ function youtubeThumb(youtubeId: string) {
   return `https://i.ytimg.com/vi/${youtubeId}/maxresdefault.jpg`;
 }
 
-function youtubeEmbed(youtubeId: string) {
+function youtubeEmbedModal(youtubeId: string) {
   return `https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`;
+}
+
+// Inline mobile player — adds playsinline so iOS doesn't auto-fullscreen,
+// and mute=0 explicitly per spec (sound on; mobile may still gate autoplay).
+function youtubeEmbedInline(youtubeId: string) {
+  return `https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&mute=0&rel=0&modestbranding=1&playsinline=1`;
 }
 
 function PlayIcon({ className = "" }: { className?: string }) {
@@ -118,12 +124,28 @@ function ChevronIcon({
 
 export default function Gallery() {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [inlinePlayingId, setInlinePlayingId] = useState<string | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const headerRef = useReveal<HTMLDivElement>();
   const gridRef = useReveal<HTMLDivElement>();
   const carouselRef = useReveal<HTMLDivElement>();
 
   const close = useCallback(() => setActiveId(null), []);
+
+  // Hybrid playback router — desktop opens the modal, mobile mounts the
+  // iframe inline inside the tapped card. Viewport is read at click time
+  // (not during render) so SSR and first client render stay identical.
+  const handleVideoClick = useCallback((id: string) => {
+    if (typeof window === "undefined") return;
+    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+    if (isDesktop) {
+      setInlinePlayingId(null);
+      setActiveId(id);
+    } else {
+      setActiveId(null);
+      setInlinePlayingId(id);
+    }
+  }, []);
 
   useEffect(() => {
     if (!activeId) return;
@@ -174,7 +196,12 @@ export default function Gallery() {
         className="reveal max-w-[1200px] mx-auto grid grid-cols-1 gap-4 md:grid-cols-3 md:grid-rows-2"
       >
         {videoItems.map((item) => (
-          <MediaCard key={item.id} item={item} onOpen={() => setActiveId(item.id)} />
+          <MediaCard
+            key={item.id}
+            item={item}
+            isInlinePlaying={inlinePlayingId === item.id}
+            onOpen={() => handleVideoClick(item.id)}
+          />
         ))}
       </div>
 
@@ -209,9 +236,11 @@ export default function Gallery() {
 
 function MediaCard({
   item,
+  isInlinePlaying,
   onOpen,
 }: {
   item: VideoItem;
+  isInlinePlaying: boolean;
   onOpen: () => void;
 }) {
   const isFeatured = !!item.featured;
@@ -223,16 +252,36 @@ function MediaCard({
     }
   }, [item.youtubeId, thumbSrc]);
 
+  const aspectClasses = isFeatured
+    ? "aspect-video md:aspect-auto md:col-span-2 md:row-span-2"
+    : "aspect-video";
+
+  // Mobile-only inline playback: thumbnail/overlay are unmounted and the
+  // YouTube iframe takes over the same grid cell. Single-instance invariant
+  // is guaranteed by the parent's `inlinePlayingId` state — switching to
+  // another video unmounts this iframe, which destroys the YT player.
+  if (isInlinePlaying) {
+    return (
+      <div
+        className={`relative overflow-hidden bg-dark2 border border-red/60 ${aspectClasses}`}
+      >
+        <iframe
+          src={youtubeEmbedInline(item.youtubeId)}
+          title={item.title}
+          allow="autoplay; fullscreen"
+          allowFullScreen
+          className="absolute inset-0 w-full h-full border-0"
+        />
+      </div>
+    );
+  }
+
   return (
     <button
       type="button"
       onClick={onOpen}
       aria-label={`Play: ${item.title}`}
-      className={`group relative overflow-hidden bg-dark2 border border-white/[0.06] text-left transition-all duration-300 hover:border-red/60 focus-visible:border-red focus-visible:outline-none ${
-        isFeatured
-          ? "aspect-video md:aspect-auto md:col-span-2 md:row-span-2"
-          : "aspect-video"
-      }`}
+      className={`group relative overflow-hidden bg-dark2 border border-white/[0.06] text-left transition-all duration-300 hover:border-red/60 focus-visible:border-red focus-visible:outline-none ${aspectClasses}`}
     >
       <Image
         src={thumbSrc}
@@ -415,7 +464,7 @@ function Modal({
       >
         {item.kind === "video" ? (
           <iframe
-            src={youtubeEmbed(item.youtubeId)}
+            src={youtubeEmbedModal(item.youtubeId)}
             title={item.title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
