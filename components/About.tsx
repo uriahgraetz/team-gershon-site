@@ -1,76 +1,193 @@
 "use client";
 
-import { useReveal } from "@/hooks/useReveal";
+import Image from "next/image";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 
-const disciplines = [
-  { icon: "🥊", name: "Boxing",       desc: "Footwork, combinations & ring intelligence" },
-  { icon: "🦵", name: "Muay Thai",    desc: "The art of 8 limbs — full striking system" },
-  { icon: "💪", name: "Conditioning", desc: "Fighter fitness for every body type" },
-  { icon: "🏆", name: "Competition",  desc: "Full fight camp preparation & strategy" },
-];
+const COACH_BODY =
+  "With years of experience competing at the highest levels of professional kickboxing, Itay Gershon brings world-class expertise to every training session. His journey from the ring to coaching is built on a foundation of relentless discipline, technical precision, and a deep passion for martial arts. Itay’s mission is to pass on the knowledge forged in combat, helping athletes of all levels unlock their true potential.";
+
+const GYM_BODY =
+  "Located in Jerusalem, Team Gershon is a premier Muay Thai and Boxing academy dedicated to building physical strength, character, and community. We offer a supportive yet highly focused environment where members can push their limits safely and effectively. Whether you are stepping onto the mats for the first time to get in shape or preparing for competition, Team Gershon is your home for striking excellence.";
 
 export default function About() {
-  const ref = useReveal<HTMLDivElement>();
+  const reduce = useReducedMotion();
+
+  const fadeUp: Variants = {
+    hidden: { opacity: 0, y: reduce ? 0 : 28 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.7, ease: "easeOut" },
+    },
+  };
+
+  const stagger: Variants = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } },
+  };
 
   return (
-    <section id="about" className="py-32 px-[5vw] bg-dark">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center max-w-[1200px] mx-auto">
-        {/* Text column */}
-        <div ref={ref} className="reveal">
+    <section
+      id="about"
+      className="relative isolate w-full min-h-screen overflow-hidden bg-black-deep"
+    >
+      {/* Background — mobile */}
+      <Image
+        src="/images/itay-victory-bg-mobile.avif"
+        alt=""
+        fill
+        priority={false}
+        sizes="100vw"
+        className="object-cover object-[50%_30%] md:hidden -z-20"
+      />
+      {/* Background — desktop */}
+      <Image
+        src="/images/itay-victory-bg-desktop.avif"
+        alt=""
+        fill
+        priority={false}
+        sizes="100vw"
+        className="hidden md:block object-cover object-[70%_30%] -z-20"
+      />
+
+      {/* Overlay — mobile: top→bottom darken so text panel stays legible */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 md:hidden"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.35) 35%, rgba(10,10,10,0.92) 100%)",
+        }}
+      />
+      {/* Overlay — desktop: heavy on the left where the text lives, fading right */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 hidden md:block"
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.78) 35%, rgba(10,10,10,0.35) 70%, rgba(10,10,10,0.1) 100%)",
+        }}
+      />
+      {/* Vignette + red ambient bloom — desktop only, behind the panel side */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 hidden md:block opacity-60"
+        style={{
+          background:
+            "radial-gradient(60% 80% at 85% 50%, rgba(200,16,46,0.18) 0%, rgba(200,16,46,0) 60%)",
+        }}
+      />
+
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.2 }}
+        className="relative max-w-[1300px] mx-auto px-[5vw] py-24 md:py-32 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center min-h-screen"
+      >
+        {/* ===== Column 1 — Heritage / Heading ===== */}
+        <motion.div variants={fadeUp} className="md:pr-4">
           <p className="font-barlow-cond text-[0.8rem] font-semibold tracking-[5px] uppercase text-red mb-4">
-            Who We Are
+            Jerusalem
           </p>
-          <div className="w-[60px] h-[3px] mb-8" style={{ background: "linear-gradient(90deg, #C8102E, #D4A017)" }} />
+          <div
+            className="w-[60px] h-[3px] mb-8"
+            style={{ background: "linear-gradient(90deg, #C8102E, #D4A017)" }}
+          />
           <h2
-            className="font-bebas leading-[0.9] tracking-[2px] text-cream mb-6"
-            style={{ fontSize: "clamp(3rem, 7vw, 6rem)" }}
+            className="font-bebas leading-[0.88] tracking-[2px] text-cream"
+            style={{ fontSize: "clamp(3rem, 7.2vw, 6.25rem)" }}
           >
             BUILT ON
             <br />
-            <span className="text-red">FIRE &amp;</span>
+            <span className="text-red">FIRE</span>
             <br />
-            DISCIPLINE
+            &amp; DISCIPLINE
           </h2>
-          <p className="text-[1.05rem] font-light text-muted max-w-[540px] leading-[1.8]">
-            Team Gershon is more than a gym — it&apos;s a family of fighters and fitness
-            enthusiasts united by a passion for the sweet science. Our world-class
-            coaches guide you from your first session to the competitive stage.
-          </p>
 
-          <div className="grid grid-cols-2 gap-4 mt-10 sm:grid-cols-1 md:grid-cols-2">
-            {disciplines.map((d) => (
+          {/* Mobile-only profile sits between heading and panel */}
+          <motion.div variants={fadeUp} className="md:hidden mt-10">
+            <div className="relative w-[78%] max-w-[360px] aspect-[4/5] mx-auto border border-white/[0.08] shadow-[0_0_24px_rgba(200,16,46,0.18)]">
+              <Image
+                src="/images/itay-profile-mobile.avif"
+                alt="Itay Gershon — head coach"
+                fill
+                sizes="(max-width: 768px) 78vw, 360px"
+                className="object-cover"
+              />
               <div
-                key={d.name}
-                className="relative bg-dark2 border border-red/20 p-6 overflow-hidden transition-all duration-300 hover:border-red hover:-translate-y-1 group"
-              >
-                <div className="absolute top-0 left-0 w-[3px] h-full" style={{ background: "linear-gradient(to bottom, #C8102E, #D4A017)" }} />
-                <div className="text-[2rem] mb-3">{d.icon}</div>
-                <div className="font-barlow-cond text-[1.1rem] font-bold tracking-[1px] text-cream mb-1">
-                  {d.name}
-                </div>
-                <div className="text-[0.85rem] text-muted">{d.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Animated ring visual */}
-        <div className="flex items-center justify-center">
-          <div
-            className="w-[280px] h-[280px] md:w-[420px] md:h-[420px] rounded-full border-2 border-red/30 flex items-center justify-center relative animate-slow-spin"
-          >
-            {/* Inner rings via pseudo-like divs */}
-            <div className="absolute rounded-full border border-gold/15" style={{ width: "85%", height: "85%" }} />
-            <div className="absolute rounded-full border border-red/10" style={{ width: "70%", height: "70%" }} />
-            <div className="animate-slow-spin-rev text-center">
-              <span className="font-bebas text-[5rem] text-red leading-none block">TG</span>
-              <p className="font-barlow-cond text-[0.85rem] font-semibold tracking-[4px] uppercase text-muted mt-2">
-                Train Hard. Fight Smart.
-              </p>
+                aria-hidden
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background:
+                    "linear-gradient(180deg, transparent 60%, rgba(10,10,10,0.55) 100%)",
+                }}
+              />
             </div>
+          </motion.div>
+        </motion.div>
+
+        {/* ===== Column 2 — Personal Touch panel ===== */}
+        <motion.div variants={fadeUp} className="w-full">
+          <div className="relative border border-white/[0.08] bg-black-deep/55 backdrop-blur-md p-6 sm:p-8 md:p-10">
+            {/* Accent strip */}
+            <div
+              className="absolute top-0 left-0 w-full h-[3px]"
+              style={{ background: "linear-gradient(90deg, #C8102E, #D4A017)" }}
+            />
+
+            {/* Desktop-only profile inside the panel */}
+            <motion.div variants={fadeUp} className="hidden md:block mb-8">
+              <div className="relative w-full aspect-[16/10] border border-white/[0.08]">
+                <Image
+                  src="/images/itay-profile-desktop.avif"
+                  alt="Itay Gershon — head coach"
+                  fill
+                  sizes="(min-width: 1024px) 540px, (min-width: 768px) 45vw, 100vw"
+                  className="object-cover object-top"
+                />
+                <div
+                  aria-hidden
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, transparent 55%, rgba(10,10,10,0.65) 100%)",
+                  }}
+                />
+              </div>
+            </motion.div>
+
+            {/* Coach block */}
+            <motion.div variants={fadeUp}>
+              <p className="font-barlow-cond text-[0.75rem] font-semibold tracking-[4px] uppercase text-red mb-3">
+                The Coach
+              </p>
+              <h3 className="font-bebas text-cream text-[1.75rem] sm:text-[2rem] leading-none tracking-[1.5px] mb-4">
+                Itay Gershon
+              </h3>
+              <p className="font-barlow font-light text-muted text-[1rem] sm:text-[1.05rem] leading-[1.75]">
+                {COACH_BODY}
+              </p>
+            </motion.div>
+
+            {/* Divider */}
+            <div className="my-8 h-px w-full bg-white/[0.07]" />
+
+            {/* Gym block */}
+            <motion.div variants={fadeUp}>
+              <p className="font-barlow-cond text-[0.75rem] font-semibold tracking-[4px] uppercase text-red mb-3">
+                The Gym
+              </p>
+              <h3 className="font-bebas text-cream text-[1.75rem] sm:text-[2rem] leading-none tracking-[1.5px] mb-4">
+                Team Gershon
+              </h3>
+              <p className="font-barlow font-light text-muted text-[1rem] sm:text-[1.05rem] leading-[1.75]">
+                {GYM_BODY}
+              </p>
+            </motion.div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
