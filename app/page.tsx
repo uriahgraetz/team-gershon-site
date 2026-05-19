@@ -1,6 +1,5 @@
 import Navbar   from "@/components/Navbar";
 import Hero     from "@/components/Hero";
-import Stats    from "@/components/Stats";
 import About    from "@/components/About";
 import Programs from "@/components/Programs";
 import Schedule from "@/components/Schedule";
@@ -14,7 +13,10 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
-        <Stats />
+        <div
+          aria-hidden
+          className="h-px w-full bg-gradient-to-r from-transparent via-red/25 to-transparent"
+        />
         <About />
         <Programs />
         <Schedule />
