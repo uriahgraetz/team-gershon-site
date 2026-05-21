@@ -26,7 +26,7 @@ const SCHEDULE_DAYS: readonly ScheduleDay[] = [
       { time: "17:00–18:00", kind: "kids" },
       { time: "18:00–19:00", kind: "basic" },
       { time: "19:00–20:10", kind: "advanced" },
-      { time: "21:10",       kind: "sparring" },
+      { time: "20:10–21:10", kind: "sparring" },
     ],
   },
   {
