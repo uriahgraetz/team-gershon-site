@@ -24,8 +24,8 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           className="h-px w-full bg-gradient-to-r from-transparent via-red/25 to-transparent"
         />
         <About />
-        <Programs />
-        <Schedule />
+        <Programs dict={dict.programs} />
+        <Schedule dict={dict.schedule} />
         <Gallery />
         <Contact />
       </main>

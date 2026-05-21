@@ -21,5 +21,76 @@
     "ctaPrimary": "Start Training",
     "ctaSecondary": "View Programs",
     "scrollHint": "Scroll"
+  },
+  "programs": {
+    "kicker": "What We Offer",
+    "headingTop": "TRAINING",
+    "headingEmphasis": "PROGRAMS",
+    "popularBadge": "Most Popular",
+    "cards": {
+      "essential": {
+        "freq": "1 session / week",
+        "title": "ESSENTIAL",
+        "desc": "The perfect entry point for those looking to start their journey and learn the basics.",
+        "details": ["Core mechanics focus", "Flexible schedule"]
+      },
+      "foundations": {
+        "freq": "2 sessions / week",
+        "title": "FOUNDATIONS",
+        "desc": "Build a rock-solid base with consistent training and fundamental technique drills.",
+        "details": ["Skill development", "Guided progression"]
+      },
+      "performance": {
+        "freq": "3 sessions / week",
+        "title": "PERFORMANCE",
+        "desc": "Take your training to the next level with increased intensity and tactical workshops.",
+        "details": ["Advanced combinations", "Sparring eligibility"]
+      },
+      "proAthlete": {
+        "freq": "4 sessions / week",
+        "title": "PRO-ATHLETE",
+        "desc": "Designed for dedicated practitioners aiming for elite physical and technical conditioning.",
+        "details": ["High-intensity drills", "Athlete mindset coaching"]
+      },
+      "fightCamp": {
+        "freq": "5 sessions / week",
+        "title": "FIGHT CAMP",
+        "desc": "The ultimate immersion. Full competition preparation and peak performance training.",
+        "details": ["Full access to all classes", "Professional fight prep"]
+      },
+      "youngLions": {
+        "freq": "Ages 6–13",
+        "title": "YOUNG LIONS",
+        "desc": "Safe and professional classes focusing on discipline, confidence, and martial arts basics.",
+        "details": ["Confidence & Discipline", "Strength & Fitness"]
+      }
+    }
+  },
+  "schedule": {
+    "kicker": "Weekly Sessions",
+    "headingTop": "TRAINING",
+    "headingEmphasis": "SCHEDULE",
+    "bannerEn": "MEN ONLY",
+    "bannerHe": "גברים בלבד",
+    "ctaPrimary": "Start Training",
+    "kidsPill": "KIDS",
+    "ageTag": "14+",
+    "days": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday"
+    },
+    "sports": {
+      "muayThai": "MUAY THAI",
+      "boxing": "BOXING"
+    },
+    "sessions": {
+      "kids": "Kids 7-11",
+      "basic": "Basic",
+      "advanced": "Advanced",
+      "sparring": "Sparring"
+    }
   }
 }
