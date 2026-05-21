@@ -437,7 +437,7 @@ export default function Contact({
             </div>
 
             {/* Honeypot — visually hidden, real users won't fill it; bots usually will */}
-            <div aria-hidden="true" className="absolute w-px h-px overflow-hidden left-[-9999px] top-auto">
+            <div aria-hidden="true" className="sr-only">
               <label>
                 Website
                 <input

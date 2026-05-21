@@ -74,9 +74,9 @@ export default async function RootLayout({
     <html
       lang={lang}
       dir={dir}
-      className={`${bebasNeue.variable} ${barlowCondensed.variable} ${barlow.variable} ${heebo.variable}`}
+      className={`${bebasNeue.variable} ${barlowCondensed.variable} ${barlow.variable} ${heebo.variable} overflow-x-hidden`}
     >
-      <body className="bg-black-deep text-cream font-barlow font-normal leading-relaxed overflow-x-hidden">
+      <body className="bg-black-deep text-cream font-barlow font-normal leading-relaxed overflow-x-hidden max-w-[100vw]">
         {children}
       </body>
     </html>

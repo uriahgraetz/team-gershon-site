@@ -48,7 +48,7 @@ export default function Programs({
 
       <div
         ref={gridRef}
-        className="reveal grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 max-w-[1200px]"
+        className="reveal grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 max-w-[1200px] mx-auto"
       >
         {PROGRAM_CARDS.map((card) => {
           const c = dict.cards[card.key];
