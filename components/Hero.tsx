@@ -38,7 +38,7 @@ export default function Hero({ dict }: { dict: Dictionary["hero"] }) {
   return (
     <section
       id="home"
-      className="relative w-full h-screen overflow-hidden bg-black-deep"
+      className="relative w-full h-[100dvh] overflow-hidden bg-black-deep"
     >
       {/* Ambient red/gold radial bloom + diagonal black gradient */}
       <div
