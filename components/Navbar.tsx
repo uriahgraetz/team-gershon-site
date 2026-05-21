@@ -22,8 +22,13 @@ export default function Navbar({ dict }: { dict: Dictionary["navbar"] }) {
 
   return (
     <nav className="fixed top-0 inset-x-0 z-50 h-[72px] bg-black-deep/92 backdrop-blur-[12px] border-b border-red/25 flex items-center justify-between px-[5vw]">
-      {/* Logo */}
-      <div className="font-bebas text-[1.8rem] tracking-[2px] text-cream">
+      {/* Logo — `lang="en"` keeps the wordmark in Bebas+Barlow even on /he
+          (re-anchored via the [lang="en"] block in globals.css) and signals
+          to Hebrew screen readers to pronounce it as English. */}
+      <div
+        lang="en"
+        className="font-bebas text-[1.8rem] tracking-[2px] text-cream"
+      >
         {dict.brand.team} <span className="text-red">{dict.brand.gershon}</span>
       </div>
 

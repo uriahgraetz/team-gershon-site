@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Bebas_Neue, Barlow_Condensed, Barlow } from "next/font/google";
+import {
+  Bebas_Neue,
+  Barlow_Condensed,
+  Barlow,
+  Heebo,
+} from "next/font/google";
 import "../globals.css";
 
 const bebasNeue = Bebas_Neue({
@@ -18,6 +23,16 @@ const barlow = Barlow({
   weight: ["300", "400", "500"],
   variable: "--font-barlow-sans",
   subsets: ["latin"],
+});
+
+// Hebrew display + body + chrome — one family covers all three roles.
+// 900 mimics Bebas's impact at the display tier; 700 covers font-bold and
+// font-semibold chrome; 500 covers font-medium; 400 is body default.
+// font-light (300) requests fall back to 400 — acceptable trade-off.
+const heebo = Heebo({
+  weight: ["400", "500", "700", "900"],
+  variable: "--font-heebo",
+  subsets: ["hebrew", "latin"],
 });
 
 export const metadata: Metadata = {
@@ -49,11 +64,17 @@ export default async function RootLayout({
   const { lang } = await params;
   const dir = lang === "he" ? "rtl" : "ltr";
 
+  // All four font variables are applied to <html> on every render. Which
+  // physical font fills each Tailwind token is decided in globals.css
+  // based on `html[lang]` — see the :root / html[lang="he"] / [lang="en"]
+  // blocks there. Elements with an explicit `lang="en"` (e.g. the brand
+  // wordmark inside the RTL Navbar) keep their Latin typography via the
+  // [lang="en"] re-anchor.
   return (
     <html
       lang={lang}
       dir={dir}
-      className={`${bebasNeue.variable} ${barlowCondensed.variable} ${barlow.variable}`}
+      className={`${bebasNeue.variable} ${barlowCondensed.variable} ${barlow.variable} ${heebo.variable}`}
     >
       <body className="bg-black-deep text-cream font-barlow font-normal leading-relaxed overflow-x-hidden">
         {children}

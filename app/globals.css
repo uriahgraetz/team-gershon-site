@@ -13,10 +13,15 @@
   --color-cream:      #F0EDE6;
   --color-muted:      #999999;
 
-  /* ── Fonts ── */
-  --font-bebas:       var(--font-bebas-neue);
-  --font-barlow-cond: var(--font-barlow-condensed);
-  --font-barlow:      var(--font-barlow-sans);
+  /* ── Fonts (Tailwind tokens) — point at semantic roles, not physical fonts.
+   *    The role variables (--font-display / --font-condensed / --font-body)
+   *    are mapped per-locale in the :root / html[lang="he"] / [lang="en"]
+   *    blocks below, so font-bebas / font-barlow / font-barlow-cond render
+   *    Heebo on /he and the Bebas+Barlow stack on /en automatically — and
+   *    any nested `lang="en"` element re-anchors back to the Latin stack. ── */
+  --font-bebas:       var(--font-display);
+  --font-barlow-cond: var(--font-condensed);
+  --font-barlow:      var(--font-body);
 
   /* ── Animations ── */
   --animate-fade-up:       fadeUp 0.9s forwards;
@@ -26,6 +31,32 @@
   --animate-blink:         blink 2s infinite;
   --animate-logo-sheen:    logoSheen 5s ease-in-out infinite;
   --animate-logo-glow:     logoGlow 3.2s ease-in-out infinite;
+}
+
+/* ── Locale → physical-font role mapping ──
+ * :root        = absolute default (Latin stack).
+ * html[lang="he"]  = Hebrew page override, Heebo fills all roles.
+ * [lang="en"]      = explicit English re-anchor — used by elements that
+ *                    must keep Latin typography even inside an RTL/Hebrew
+ *                    page (e.g. the brand wordmark TEAM GERSHON). The
+ *                    attribute is also a hint for assistive tech.
+ * Each --font-* on the RHS is injected by next/font/google in layout.tsx. */
+:root {
+  --font-display:   var(--font-bebas-neue);
+  --font-condensed: var(--font-barlow-condensed);
+  --font-body:      var(--font-barlow-sans);
+}
+
+html[lang="he"] {
+  --font-display:   var(--font-heebo);
+  --font-condensed: var(--font-heebo);
+  --font-body:      var(--font-heebo);
+}
+
+[lang="en"] {
+  --font-display:   var(--font-bebas-neue);
+  --font-condensed: var(--font-barlow-condensed);
+  --font-body:      var(--font-barlow-sans);
 }
 
 @keyframes fadeUp {
