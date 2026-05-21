@@ -4,13 +4,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
+import type { Dictionary } from "@/app/[lang]/getDictionary";
 
 type VideoItem = {
   kind: "video";
-  id: string;
+  id: keyof Dictionary["gallery"]["videoTitles"];
   youtubeId: string;
-  title: string;
-  kicker?: string;
+  kickerKey: keyof Dictionary["gallery"]["videoKickers"];
   featured?: boolean;
 };
 
@@ -19,45 +19,31 @@ type ImageItem = {
   id: string;
   src: string;
   alt: string;
-  title?: string;
 };
 
 type GalleryItem = VideoItem | ImageItem;
 
-const videoItems: VideoItem[] = [
+const VIDEO_ITEMS: readonly VideoItem[] = [
   {
     kind: "video",
     id: "highlight",
     youtubeId: "yOzl-CpTYBU",
-    title: "Itay Gershon Highlight",
-    kicker: "Featured Footage",
+    kickerKey: "featured",
     featured: true,
   },
   {
     kind: "video",
-    id: "vs-zhaoyang",
+    id: "vsZhaoyang",
     youtubeId: "qMCBhxnjTms",
-    title: "vs. Zhaoyang Li",
-    kicker: "Professional Bout",
+    kickerKey: "bout",
   },
   {
     kind: "video",
-    id: "vs-trevor",
+    id: "vsTrevor",
     youtubeId: "Pz9SHwx7qUM",
-    title: "vs. Trevor Ragin",
-    kicker: "Professional Bout",
+    kickerKey: "bout",
   },
 ];
-
-const trainingPhotos: ImageItem[] = Array.from({ length: 9 }, (_, i) => {
-  const n = i + 1;
-  return {
-    kind: "image",
-    id: `training-${n}`,
-    src: `/images/training-${n}.webp`,
-    alt: `Training at Team Gershon — moment ${n} of 9`,
-  };
-});
 
 function youtubeThumb(youtubeId: string) {
   return `https://i.ytimg.com/vi/${youtubeId}/maxresdefault.jpg`;
@@ -122,13 +108,26 @@ function ChevronIcon({
   );
 }
 
-export default function Gallery() {
+export default function Gallery({
+  dict,
+}: {
+  dict: Dictionary["gallery"];
+}) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [inlinePlayingId, setInlinePlayingId] = useState<string | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const headerRef = useReveal<HTMLDivElement>();
   const gridRef = useReveal<HTMLDivElement>();
   const carouselRef = useReveal<HTMLDivElement>();
+
+  // Training photos: built per render. Alt text reads from dict so it
+  // translates with the page locale.
+  const trainingPhotos: ImageItem[] = Array.from({ length: 9 }, (_, i) => ({
+    kind: "image",
+    id: `training-${i + 1}`,
+    src: `/images/training-${i + 1}.webp`,
+    alt: `${dict.trainingPhotoAltPrefix} #${i + 1}`,
+  }));
 
   const close = useCallback(() => setActiveId(null), []);
 
@@ -162,7 +161,7 @@ export default function Gallery() {
   }, [activeId, close]);
 
   const active: GalleryItem | null = activeId
-    ? videoItems.find((i) => i.id === activeId) ??
+    ? VIDEO_ITEMS.find((i) => i.id === activeId) ??
       trainingPhotos.find((i) => i.id === activeId) ??
       null
     : null;
@@ -171,23 +170,29 @@ export default function Gallery() {
     <section id="gallery" className="py-32 px-[5vw] bg-black-deep">
       <div ref={headerRef} className="reveal max-w-[1200px] mx-auto mb-16">
         <p className="font-barlow-cond text-[0.8rem] font-semibold tracking-[5px] uppercase text-red mb-4">
-          Fight Footage
+          {dict.kicker}
         </p>
         <div
           className="w-[60px] h-[3px] mb-8"
           style={{ background: "linear-gradient(90deg, #C8102E, #D4A017)" }}
         />
+        {/* H2 supports an empty headingTop for locales where the phrase is
+            a single Hebrew word (e.g. "בזירה"). When top is empty, we skip
+            the leading line + <br/> so the emphasis word stands alone. */}
         <h2
           className="font-bebas leading-[0.9] tracking-[2px] text-cream mb-6"
           style={{ fontSize: "clamp(3rem, 7vw, 6rem)" }}
         >
-          IN THE
-          <br />
-          <span className="text-red">RING</span>
+          {dict.headingTop && (
+            <>
+              {dict.headingTop}
+              <br />
+            </>
+          )}
+          <span className="text-red">{dict.headingEmphasis}</span>
         </h2>
         <p className="text-[1.05rem] font-light text-muted leading-[1.8] max-w-[640px]">
-          Itay Gershon in professional competition. Every round, every strike — the
-          same standard we train at Team Gershon.
+          {dict.body}
         </p>
       </div>
 
@@ -195,10 +200,11 @@ export default function Gallery() {
         ref={gridRef}
         className="reveal max-w-[1200px] mx-auto grid grid-cols-1 gap-4 md:grid-cols-3 md:grid-rows-2"
       >
-        {videoItems.map((item) => (
+        {VIDEO_ITEMS.map((item) => (
           <MediaCard
             key={item.id}
             item={item}
+            dict={dict}
             isInlinePlaying={inlinePlayingId === item.id}
             onOpen={() => handleVideoClick(item.id)}
           />
@@ -209,25 +215,32 @@ export default function Gallery() {
       <div ref={carouselRef} className="reveal max-w-[1400px] mx-auto mt-24 md:mt-32">
         <div className="px-0 md:px-0 max-w-[1200px] mx-auto mb-10">
           <p className="font-barlow-cond text-[0.8rem] font-semibold tracking-[5px] uppercase text-red mb-3">
-            Inside the Gym
+            {dict.trainingKicker}
           </p>
           <h3
             className="font-bebas leading-[0.9] tracking-[2px] text-cream"
             style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)" }}
           >
-            Training <span className="text-red">Moments</span>
+            {dict.trainingHeadingTop}{" "}
+            <span className="text-red">{dict.trainingHeadingEmphasis}</span>
           </h3>
         </div>
 
         <TrainingCarousel
           photos={trainingPhotos}
+          dict={dict}
           onOpen={(id) => setActiveId(id)}
         />
       </div>
 
       <AnimatePresence>
         {active && (
-          <Modal item={active} onClose={close} reduced={!!prefersReducedMotion} />
+          <Modal
+            item={active}
+            dict={dict}
+            onClose={close}
+            reduced={!!prefersReducedMotion}
+          />
         )}
       </AnimatePresence>
     </section>
@@ -236,14 +249,18 @@ export default function Gallery() {
 
 function MediaCard({
   item,
+  dict,
   isInlinePlaying,
   onOpen,
 }: {
   item: VideoItem;
+  dict: Dictionary["gallery"];
   isInlinePlaying: boolean;
   onOpen: () => void;
 }) {
   const isFeatured = !!item.featured;
+  const title = dict.videoTitles[item.id];
+  const kicker = dict.videoKickers[item.kickerKey];
   const [thumbSrc, setThumbSrc] = useState(youtubeThumb(item.youtubeId));
 
   const handleThumbError = useCallback(() => {
@@ -267,7 +284,7 @@ function MediaCard({
       >
         <iframe
           src={youtubeEmbedInline(item.youtubeId)}
-          title={item.title}
+          title={title}
           allow="autoplay; fullscreen"
           allowFullScreen
           className="absolute inset-0 w-full h-full border-0"
@@ -280,12 +297,12 @@ function MediaCard({
     <button
       type="button"
       onClick={onOpen}
-      aria-label={`Play: ${item.title}`}
+      aria-label={`${dict.aria.playPrefix}: ${title}`}
       className={`group relative overflow-hidden bg-dark2 border border-white/[0.06] text-left transition-all duration-300 hover:border-red/60 focus-visible:border-red focus-visible:outline-none ${aspectClasses}`}
     >
       <Image
         src={thumbSrc}
-        alt={`${item.title} — video thumbnail`}
+        alt={title}
         fill
         sizes={
           isFeatured
@@ -308,24 +325,31 @@ function MediaCard({
           }`}
           style={{ boxShadow: "0 0 32px rgba(200,16,46,0.45)" }}
         >
+          {/* ml-* is an OPTICAL center adjustment for the play triangle's
+              right-weighted bbox, not a layout-direction concern — kept
+              physical so the triangle reads centered in both LTR and RTL. */}
           <PlayIcon className={isFeatured ? "w-7 md:w-9 ml-1" : "w-5 ml-0.5"} />
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 pointer-events-none">
-        {item.kicker && (
-          <p className="font-barlow-cond text-[0.7rem] font-semibold tracking-[3px] uppercase text-red mb-1">
-            {item.kicker}
-          </p>
-        )}
+      {/* Title block — kickers + titles stay English in both locales so we
+          wrap them in `lang="en"` to keep Bebas/Barlow rendering on /he. */}
+      <div className="absolute bottom-0 inset-x-0 p-5 md:p-6 pointer-events-none">
+        <p
+          lang="en"
+          className="font-barlow-cond text-[0.7rem] font-semibold tracking-[3px] uppercase text-red mb-1"
+        >
+          {kicker}
+        </p>
         <h3
+          lang="en"
           className={`font-bebas text-cream tracking-[1px] leading-none ${
             isFeatured
               ? "text-[2rem] md:text-[2.75rem]"
               : "text-[1.5rem] md:text-[1.75rem]"
           }`}
         >
-          {item.title}
+          {title}
         </h3>
       </div>
     </button>
@@ -334,9 +358,11 @@ function MediaCard({
 
 function TrainingCarousel({
   photos,
+  dict,
   onOpen,
 }: {
   photos: ImageItem[];
+  dict: Dictionary["gallery"];
   onOpen: (id: string) => void;
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -381,7 +407,7 @@ function TrainingCarousel({
               <button
                 type="button"
                 onClick={() => onOpen(photo.id)}
-                aria-label={`Open photo ${index + 1} of ${photos.length}`}
+                aria-label={`${dict.aria.openPhoto} ${index + 1}/${photos.length}`}
                 className="relative block w-full aspect-[4/5] overflow-hidden bg-dark2 border border-white/[0.06] transition-colors duration-300 hover:border-red/60 focus-visible:border-red focus-visible:outline-none"
               >
                 <Image
@@ -402,24 +428,28 @@ function TrainingCarousel({
         </ul>
       </div>
 
-      {/* Arrows — desktop only, hover-revealed */}
+      {/* Arrows — desktop only, hover-revealed. Position uses logical
+          start/end so prev sits at the inline-start side and next at the
+          inline-end side, swapping naturally in RTL. The chevron icons
+          flip 180° in RTL via rtl:rotate-180 so prev always points toward
+          earlier items (right in RTL) and next toward later items. */}
       <button
         type="button"
         onClick={() => scrollByPage(-1)}
         disabled={!canLeft}
-        aria-label="Previous photos"
-        className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 items-center justify-center rounded-full bg-black-deep/70 backdrop-blur-sm border border-white/[0.08] text-cream opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red hover:border-red disabled:opacity-0 disabled:pointer-events-none focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
+        aria-label={dict.aria.prevPhotos}
+        className="hidden md:flex absolute start-4 top-1/2 -translate-y-1/2 w-12 h-12 items-center justify-center rounded-full bg-black-deep/70 backdrop-blur-sm border border-white/[0.08] text-cream opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red hover:border-red disabled:opacity-0 disabled:pointer-events-none focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
       >
-        <ChevronIcon dir="left" className="w-5 h-5" />
+        <ChevronIcon dir="left" className="w-5 h-5 rtl:rotate-180" />
       </button>
       <button
         type="button"
         onClick={() => scrollByPage(1)}
         disabled={!canRight}
-        aria-label="Next photos"
-        className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 items-center justify-center rounded-full bg-black-deep/70 backdrop-blur-sm border border-white/[0.08] text-cream opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red hover:border-red disabled:opacity-0 disabled:pointer-events-none focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
+        aria-label={dict.aria.nextPhotos}
+        className="hidden md:flex absolute end-4 top-1/2 -translate-y-1/2 w-12 h-12 items-center justify-center rounded-full bg-black-deep/70 backdrop-blur-sm border border-white/[0.08] text-cream opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red hover:border-red disabled:opacity-0 disabled:pointer-events-none focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
       >
-        <ChevronIcon dir="right" className="w-5 h-5" />
+        <ChevronIcon dir="right" className="w-5 h-5 rtl:rotate-180" />
       </button>
     </div>
   );
@@ -427,13 +457,20 @@ function TrainingCarousel({
 
 function Modal({
   item,
+  dict,
   onClose,
   reduced,
 }: {
   item: GalleryItem;
+  dict: Dictionary["gallery"];
   onClose: () => void;
   reduced: boolean;
 }) {
+  const modalLabel =
+    item.kind === "video" ? dict.videoTitles[item.id] : item.alt;
+  const closeLabel =
+    item.kind === "video" ? dict.aria.closeVideo : dict.aria.closeImage;
+
   return (
     <motion.div
       initial={reduced ? { opacity: 1 } : { opacity: 0 }}
@@ -444,11 +481,7 @@ function Modal({
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label={
-        item.kind === "video"
-          ? `Now playing: ${item.title}`
-          : item.alt
-      }
+      aria-label={modalLabel}
     >
       <motion.div
         initial={reduced ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
@@ -465,7 +498,7 @@ function Modal({
         {item.kind === "video" ? (
           <iframe
             src={youtubeEmbedModal(item.youtubeId)}
-            title={item.title}
+            title={dict.videoTitles[item.id]}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
             className="w-full h-full border-0"
@@ -482,11 +515,13 @@ function Modal({
             />
           </div>
         )}
+        {/* Close button — `end-0` / `md:-end-3` puts the X in the inline-end
+            corner of the modal (top-right in LTR, top-left in RTL). */}
         <button
           type="button"
           onClick={onClose}
-          aria-label={item.kind === "video" ? "Close video" : "Close image"}
-          className="absolute -top-12 right-0 md:-top-3 md:-right-3 w-10 h-10 rounded-full bg-red text-cream flex items-center justify-center transition-colors duration-200 hover:bg-red-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
+          aria-label={closeLabel}
+          className="absolute -top-12 end-0 md:-top-3 md:-end-3 w-10 h-10 rounded-full bg-red text-cream flex items-center justify-center transition-colors duration-200 hover:bg-red-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
         >
           <CloseIcon className="w-5 h-5" />
         </button>

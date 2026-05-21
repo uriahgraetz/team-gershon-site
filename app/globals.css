@@ -59,6 +59,12 @@ html[lang="he"] {
   --font-body:      var(--font-barlow-sans);
 }
 
+[lang="he"] {
+  --font-display:   var(--font-heebo);
+  --font-condensed: var(--font-heebo);
+  --font-body:      var(--font-heebo);
+}
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(30px); }
   to   { opacity: 1; transform: translateY(0); }

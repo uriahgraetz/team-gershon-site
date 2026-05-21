@@ -92,5 +92,108 @@
       "advanced": "מתקדמים",
       "sparring": "ספארינג"
     }
+  },
+  "gallery": {
+    "kicker": "תיעוד מהזירה",
+    "headingTop": "",
+    "headingEmphasis": "בזירה",
+    "body": "איתי גרשון בתחרויות מקצועיות. כל סיבוב, כל מכה — אותו הסטנדרט שאנחנו מתאמנים עליו בטים גרשון.",
+    "trainingKicker": "בתוך המועדון",
+    "trainingHeadingTop": "רגעים",
+    "trainingHeadingEmphasis": "מהאימונים",
+    "trainingPhotoAltPrefix": "Training at Team Gershon",
+    "videoKickers": {
+      "featured": "Featured Footage",
+      "bout": "Professional Bout"
+    },
+    "videoTitles": {
+      "highlight": "Itay Gershon Highlight",
+      "vsZhaoyang": "vs. Zhaoyang Li",
+      "vsTrevor": "vs. Trevor Ragin"
+    },
+    "aria": {
+      "playPrefix": "הפעל",
+      "openPhoto": "פתיחת תמונה",
+      "prevPhotos": "תמונות קודמות",
+      "nextPhotos": "תמונות הבאות",
+      "closeVideo": "סגירת סרטון",
+      "closeImage": "סגירת תמונה"
+    }
+  },
+  "contact": {
+    "kicker": "צרו קשר",
+    "headingTop": "מוכנים",
+    "headingEmphasis": "לקרב?",
+    "body": "אימון ניסיון חינם. בואו לראות את המכון, לפגוש את הצוות ולגלות מה זה באמת טים גרשון.",
+    "methods": {
+      "locationLabel": "כתובת",
+      "phoneLabel": "טלפון",
+      "emailLabel": "אימייל",
+      "hoursLabel": "שעות פעילות",
+      "addressValue": "רחוב רבי צדוק 12 (ביה״ס גבעת גונן), ירושלים",
+      "hoursValue": "א׳–ה׳ 18:00–21:00",
+      "emailValue": "Gershonteam@gmail.com",
+      "getDirections": "הוראות הגעה",
+      "copyTooltip": "לחצו להעתקה",
+      "copyNumberTooltip": "העתקת מספר",
+      "copyConfirm": "הועתק!",
+      "copyFailAlert": "לא ניתן להעתיק אוטומטית. אנא העתיקו ידנית:"
+    },
+    "form": {
+      "title": "שלחו הודעה",
+      "firstNameLabel": "שם פרטי",
+      "firstNamePlaceholder": "שם פרטי",
+      "lastNameLabel": "שם משפחה",
+      "lastNamePlaceholder": "שם משפחה",
+      "emailLabel": "כתובת אימייל",
+      "emailPlaceholder": "you@email.com",
+      "phoneLabel": "טלפון",
+      "phonePlaceholder": "+972 50 XXX XXXX",
+      "experienceLabel": "רמת ניסיון",
+      "experiencePlaceholder": "...בחרו רמה",
+      "experienceOptions": {
+        "beginner": "מתחילים (ללא ניסיון)",
+        "some": "קצת ניסיון",
+        "intermediate": "בינוני",
+        "advanced": "מתקדם / תחרותי"
+      },
+      "messageLabel": "הודעה",
+      "messagePlaceholder": "...ספרו לנו על המטרות שלכם או כל שאלה שיש לכם",
+      "submit": "שליחת הודעה",
+      "submitting": "שולח...",
+      "submitted": "✓ נשלח",
+      "successBanner": "ההודעה נשלחה בהצלחה!",
+      "errorBefore": "משהו השתבש. נסו שוב, או",
+      "errorLink": "שלחו לנו הודעה בוואטסאפ",
+      "errorAfter": "למענה מיידי.",
+      "responseNote": "אנחנו משתדלים לענות תוך 24 שעות. לחיבור מהיר יותר, דברו איתנו בוואטסאפ."
+    },
+    "whatsapp": {
+      "buttonLabel": "Chat on WhatsApp",
+      "ariaLabel": "צ'אט עם טים גרשון בוואטסאפ",
+      "prefilledMessage": "היי איתי, ראיתי את הפרטים באתר ואשמח לתאם אימון ניסיון."
+    },
+    "social": {
+      "instagram": "Instagram",
+      "youtube": "YouTube",
+      "facebook": "Facebook",
+      "instagramAria": "טים גרשון באינסטגרם",
+      "youtubeAria": "טים גרשון ביוטיוב",
+      "facebookAria": "טים גרשון בפייסבוק"
+    },
+    "aria": {
+      "directionsLabel": "פתיחת הכתובת בגוגל מפות",
+      "copyToClipboard": "העתקה ללוח"
+    }
+  },
+  "footer": {
+    "brand": { "team": "TEAM", "gershon": "GERSHON" },
+    "copyright": "טים גרשון. כל הזכויות שמורות 2025 ©",
+    "links": {
+      "home": "בית",
+      "programs": "תוכניות",
+      "gallery": "גלריה",
+      "contact": "צור קשר"
+    }
   }
 }

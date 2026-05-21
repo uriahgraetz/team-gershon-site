@@ -92,5 +92,108 @@
       "advanced": "Advanced",
       "sparring": "Sparring"
     }
+  },
+  "gallery": {
+    "kicker": "Fight Footage",
+    "headingTop": "IN THE",
+    "headingEmphasis": "RING",
+    "body": "Itay Gershon in professional competition. Every round, every strike — the same standard we train at Team Gershon.",
+    "trainingKicker": "Inside the Gym",
+    "trainingHeadingTop": "Training",
+    "trainingHeadingEmphasis": "Moments",
+    "trainingPhotoAltPrefix": "Training at Team Gershon",
+    "videoKickers": {
+      "featured": "Featured Footage",
+      "bout": "Professional Bout"
+    },
+    "videoTitles": {
+      "highlight": "Itay Gershon Highlight",
+      "vsZhaoyang": "vs. Zhaoyang Li",
+      "vsTrevor": "vs. Trevor Ragin"
+    },
+    "aria": {
+      "playPrefix": "Play",
+      "openPhoto": "Open photo",
+      "prevPhotos": "Previous photos",
+      "nextPhotos": "Next photos",
+      "closeVideo": "Close video",
+      "closeImage": "Close image"
+    }
+  },
+  "contact": {
+    "kicker": "Get In Touch",
+    "headingTop": "READY TO",
+    "headingEmphasis": "FIGHT?",
+    "body": "Your first session is free. Come see the gym, meet the team, and find out what Team Gershon is all about.",
+    "methods": {
+      "locationLabel": "Location",
+      "phoneLabel": "Phone",
+      "emailLabel": "Email",
+      "hoursLabel": "Hours",
+      "addressValue": "רחוב רבי צדוק 12 (ביה״ס גבעת גונן), ירושלים",
+      "hoursValue": "Sun–Thu 6pm–9pm",
+      "emailValue": "Gershonteam@gmail.com",
+      "getDirections": "Get Directions",
+      "copyTooltip": "Click to copy",
+      "copyNumberTooltip": "Copy Number",
+      "copyConfirm": "Copied!",
+      "copyFailAlert": "Couldn't copy automatically. Please copy manually:"
+    },
+    "form": {
+      "title": "Send a Message",
+      "firstNameLabel": "First Name",
+      "firstNamePlaceholder": "Your name",
+      "lastNameLabel": "Last Name",
+      "lastNamePlaceholder": "Last name",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "you@email.com",
+      "phoneLabel": "Phone",
+      "phonePlaceholder": "+972 50 XXX XXXX",
+      "experienceLabel": "Experience Level",
+      "experiencePlaceholder": "Select your level...",
+      "experienceOptions": {
+        "beginner": "Complete Beginner",
+        "some": "Some Experience",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced / Competitive"
+      },
+      "messageLabel": "Message",
+      "messagePlaceholder": "Tell us about your goals or any questions you have...",
+      "submit": "Send Message",
+      "submitting": "Sending...",
+      "submitted": "✓ Sent",
+      "successBanner": "ההודעה נשלחה בהצלחה!",
+      "errorBefore": "Something went wrong. Please try again, or",
+      "errorLink": "message us on WhatsApp",
+      "errorAfter": "for immediate assistance.",
+      "responseNote": "We'll respond within 24 hours. Or chat with us on WhatsApp for instant replies."
+    },
+    "whatsapp": {
+      "buttonLabel": "Chat on WhatsApp",
+      "ariaLabel": "Chat with Team Gershon on WhatsApp",
+      "prefilledMessage": "היי איתי, ראיתי את הפרטים באתר ואשמח לתאם אימון ניסיון."
+    },
+    "social": {
+      "instagram": "Instagram",
+      "youtube": "YouTube",
+      "facebook": "Facebook",
+      "instagramAria": "Team Gershon on Instagram",
+      "youtubeAria": "Team Gershon on YouTube",
+      "facebookAria": "Team Gershon on Facebook"
+    },
+    "aria": {
+      "directionsLabel": "Open address in Google Maps",
+      "copyToClipboard": "Copy to clipboard"
+    }
+  },
+  "footer": {
+    "brand": { "team": "TEAM", "gershon": "GERSHON" },
+    "copyright": "© 2025 Team Gershon. All rights reserved.",
+    "links": {
+      "home": "Home",
+      "programs": "Programs",
+      "gallery": "Gallery",
+      "contact": "Contact"
+    }
   }
 }

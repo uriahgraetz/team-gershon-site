@@ -26,10 +26,10 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         <About />
         <Programs dict={dict.programs} />
         <Schedule dict={dict.schedule} />
-        <Gallery />
-        <Contact />
+        <Gallery dict={dict.gallery} />
+        <Contact dict={dict.contact} />
       </main>
-      <Footer />
+      <Footer dict={dict.footer} />
     </>
   );
 }

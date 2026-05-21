@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { useReveal } from "@/hooks/useReveal";
+import type { Dictionary } from "@/app/[lang]/getDictionary";
 
-type ContactMethod = {
+type MethodKind = "location" | "phone" | "email" | "hours";
+
+type ContactMethodConfig = {
+  kind: MethodKind;
   icon: string;
-  label: string;
-  value: string;
   href?: string;
   copyable?: boolean;
-  copyLabel?: string;
 };
 
 const MAPS_QUERY = encodeURIComponent("רחוב רבי צדוק 12 ירושלים");
@@ -20,16 +21,11 @@ function getPhoneNumber(): string {
   return ["054", "814", "1138"].join("-");
 }
 
-const contactMethods: ContactMethod[] = [
-  {
-    icon: "📍",
-    label: "Location",
-    value: "רחוב רבי צדוק 12 (ביה״ס גבעת גונן), ירושלים",
-    href: `https://www.google.com/maps/search/?api=1&query=${MAPS_QUERY}`,
-  },
-  { icon: "📞", label: "Phone",    value: getPhoneNumber(), copyable: true, copyLabel: "Copy Number" },
-  { icon: "📧", label: "Email",    value: "Gershonteam@gmail.com", copyable: true },
-  { icon: "⏰", label: "Hours",    value: "Sun–Thu 6pm–9pm" },
+const CONTACT_METHODS: readonly ContactMethodConfig[] = [
+  { kind: "location", icon: "📍", href: `https://www.google.com/maps/search/?api=1&query=${MAPS_QUERY}` },
+  { kind: "phone",    icon: "📞", copyable: true },
+  { kind: "email",    icon: "📧", copyable: true },
+  { kind: "hours",    icon: "⏰" },
 ];
 
 function InstagramIcon() {
@@ -86,10 +82,21 @@ const EMPTY_FORM: FormState = {
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
 
-export default function Contact() {
+const EXPERIENCE_OPTION_KEYS = [
+  "beginner",
+  "some",
+  "intermediate",
+  "advanced",
+] as const;
+
+export default function Contact({
+  dict,
+}: {
+  dict: Dictionary["contact"];
+}) {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [status, setStatus] = useState<SubmitStatus>("idle");
-  const [copiedLabel, setCopiedLabel] = useState<string | null>(null);
+  const [copiedKind, setCopiedKind] = useState<MethodKind | null>(null);
   const infoRef = useReveal<HTMLDivElement>();
   const formRef = useReveal<HTMLDivElement>();
 
@@ -97,14 +104,14 @@ export default function Contact() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  async function handleCopy(label: string, value: string) {
+  async function handleCopy(kind: MethodKind, value: string) {
     try {
       await navigator.clipboard.writeText(value);
-      setCopiedLabel(label);
-      setTimeout(() => setCopiedLabel((curr) => (curr === label ? null : curr)), 2000);
+      setCopiedKind(kind);
+      setTimeout(() => setCopiedKind((curr) => (curr === kind ? null : curr)), 2000);
     } catch (err) {
       console.error("Clipboard copy failed:", err);
-      alert(`Couldn't copy automatically. Please copy manually:\n\n${value}`);
+      alert(`${dict.methods.copyFailAlert}\n\n${value}`);
     }
   }
 
@@ -141,8 +148,7 @@ export default function Contact() {
 
   function handleWhatsAppClick() {
     const phone = ["972", "54", "81", "41", "138"].join("");
-    const message = "היי איתי, ראיתי את הפרטים באתר ואשמח לתאם אימון ניסיון.";
-    const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+    const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(dict.whatsapp.prefilledMessage);
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
@@ -168,6 +174,24 @@ export default function Contact() {
     window.location.href = deepLink;
   }
 
+  function getMethodLabel(kind: MethodKind): string {
+    switch (kind) {
+      case "location": return dict.methods.locationLabel;
+      case "phone":    return dict.methods.phoneLabel;
+      case "email":    return dict.methods.emailLabel;
+      case "hours":    return dict.methods.hoursLabel;
+    }
+  }
+
+  function getMethodValue(kind: MethodKind): string {
+    switch (kind) {
+      case "location": return dict.methods.addressValue;
+      case "phone":    return getPhoneNumber();
+      case "email":    return dict.methods.emailValue;
+      case "hours":    return dict.methods.hoursValue;
+    }
+  }
+
   return (
     <section id="contact" className="py-32 px-[5vw] bg-dark">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 max-w-[1200px] mx-auto items-start">
@@ -175,42 +199,53 @@ export default function Contact() {
         {/* Left: info */}
         <div ref={infoRef} className="reveal pt-4">
           <p className="font-barlow-cond text-[0.8rem] font-semibold tracking-[5px] uppercase text-red mb-4">
-            Get In Touch
+            {dict.kicker}
           </p>
           <div className="w-[60px] h-[3px] mb-8" style={{ background: "linear-gradient(90deg, #C8102E, #D4A017)" }} />
           <h2
             className="font-bebas leading-[0.9] tracking-[2px] text-cream mb-6"
             style={{ fontSize: "clamp(3rem, 7vw, 6rem)" }}
           >
-            READY TO
+            {dict.headingTop}
             <br />
-            <span className="text-red">FIGHT?</span>
+            <span className="text-red">{dict.headingEmphasis}</span>
           </h2>
           <p className="text-[1.05rem] font-light text-muted max-w-[540px] leading-[1.8]">
-            Your first session is free. Come see the gym, meet the team, and find
-            out what Team Gershon is all about.
+            {dict.body}
           </p>
 
           <div className="mt-10 flex flex-col gap-5">
-            {contactMethods.map((m) => {
+            {CONTACT_METHODS.map((m) => {
+              const label = getMethodLabel(m.kind);
+              const value = getMethodValue(m.kind);
               const baseClass =
                 "flex gap-5 items-center bg-dark2 border border-white/[0.06] px-6 py-5 transition-all duration-300";
+
+              // The address value is Hebrew text in both locales — wrap in
+              // <span lang="he" dir="rtl"> so it renders RTL with Heebo
+              // (via the [lang="he"] re-anchor in globals.css) even on /en.
+              const renderedValue = m.kind === "location" ? (
+                <span lang="he" dir="rtl">{value}</span>
+              ) : (
+                value
+              );
+
               if (m.href) {
                 return (
                   <a
-                    key={m.label}
+                    key={m.kind}
                     href={m.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`${m.label}: open address in Google Maps`}
+                    aria-label={`${label}: ${dict.aria.directionsLabel}`}
                     className={`${baseClass} no-underline text-inherit cursor-pointer hover:border-red/60 hover:bg-dark3 hover:shadow-[0_0_12px_rgba(200,16,46,0.15)]`}
                   >
                     <div className="text-[1.5rem] flex-shrink-0">{m.icon}</div>
                     <div>
                       <div className="font-barlow-cond text-[0.75rem] font-semibold tracking-[3px] uppercase text-muted">
-                        {m.label}
+                        {label}
                       </div>
-                      <div className="text-[1rem] text-cream mt-0.5">{m.value}</div>
+                      <div className="text-[1rem] text-cream mt-0.5">{renderedValue}</div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -218,101 +253,107 @@ export default function Contact() {
                         }}
                         className="mt-3 font-barlow-cond text-[0.7rem] font-semibold tracking-[2px] uppercase text-white bg-transparent border border-red/60 px-3 py-1.5 cursor-pointer transition-colors duration-200 hover:border-red hover:bg-red/10"
                       >
-                        Get Directions
+                        {dict.methods.getDirections}
                       </button>
                     </div>
                   </a>
                 );
               }
               if (m.copyable) {
-                const isCopied = copiedLabel === m.label;
+                const isCopied = copiedKind === m.kind;
+                const tooltipText = m.kind === "phone"
+                  ? dict.methods.copyNumberTooltip
+                  : dict.methods.copyTooltip;
                 return (
                   <button
-                    key={m.label}
+                    key={m.kind}
                     type="button"
-                    onClick={() => handleCopy(m.label, m.value)}
-                    aria-label={`Copy ${m.label.toLowerCase()} ${m.value} to clipboard`}
-                    className={`${baseClass} group relative w-full text-left cursor-pointer hover:border-red/60 hover:bg-dark3`}
+                    onClick={() => handleCopy(m.kind, value)}
+                    aria-label={`${dict.aria.copyToClipboard}: ${label}`}
+                    className={`${baseClass} group relative w-full text-start cursor-pointer hover:border-red/60 hover:bg-dark3`}
                   >
                     <div className="text-[1.5rem] flex-shrink-0">{m.icon}</div>
                     <div>
                       <div className="font-barlow-cond text-[0.75rem] font-semibold tracking-[3px] uppercase text-muted">
-                        {m.label}
+                        {label}
                       </div>
-                      <div className="text-[1rem] text-cream mt-0.5 break-all">{m.value}</div>
+                      <div className="text-[1rem] text-cream mt-0.5 break-all">{value}</div>
                     </div>
                     <span
                       role="status"
                       aria-live="polite"
-                      className={`pointer-events-none absolute top-2 right-3 font-barlow-cond text-[0.65rem] font-bold tracking-[1.5px] uppercase px-2 py-1 transition-all duration-200 ${
+                      className={`pointer-events-none absolute top-2 end-3 font-barlow-cond text-[0.65rem] font-bold tracking-[1.5px] uppercase px-2 py-1 transition-all duration-200 ${
                         isCopied
                           ? "opacity-100 bg-red text-cream border border-red"
                           : "opacity-0 group-hover:opacity-100 bg-dark3 text-cream border border-white/20"
                       }`}
                     >
-                      {isCopied ? "Copied!" : m.copyLabel ?? "Click to copy"}
+                      {isCopied ? dict.methods.copyConfirm : tooltipText}
                     </span>
                   </button>
                 );
               }
               return (
-                <div key={m.label} className={`${baseClass} hover:border-red/30`}>
+                <div key={m.kind} className={`${baseClass} hover:border-red/30`}>
                   <div className="text-[1.5rem] flex-shrink-0">{m.icon}</div>
                   <div>
                     <div className="font-barlow-cond text-[0.75rem] font-semibold tracking-[3px] uppercase text-muted">
-                      {m.label}
+                      {label}
                     </div>
-                    <div className="text-[1rem] text-cream mt-0.5">{m.value}</div>
+                    <div className="text-[1rem] text-cream mt-0.5">{value}</div>
                   </div>
                 </div>
               );
             })}
           </div>
 
+          {/* WhatsApp CTA — button label stays English on both locales,
+              wrapped in lang="en" so Bebas/Barlow renders on /he too. */}
           <button
             type="button"
             id="whatsapp-cta"
             onClick={handleWhatsAppClick}
-            aria-label="Chat with Team Gershon on WhatsApp"
+            aria-label={dict.whatsapp.ariaLabel}
             className="btn-clip flex items-center gap-4 mt-8 px-8 py-5 border-none cursor-pointer font-barlow-cond text-[1.1rem] font-bold tracking-[2px] uppercase text-white transition-all duration-200 hover:-translate-y-0.5"
             style={{ background: "#128C7E" }}
           >
             <WhatsAppIcon />
-            Chat on WhatsApp
+            <span lang="en">{dict.whatsapp.buttonLabel}</span>
           </button>
 
-          {/* Social media buttons */}
+          {/* Social media buttons — labels stay English in both locales via
+              lang="en" on each label span; aria-labels are translated. */}
           <div className="grid grid-cols-3 gap-3 mt-3">
             <a
               href="https://www.instagram.com/teamgershon_official/"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Team Gershon on Instagram"
+              aria-label={dict.social.instagramAria}
               className="btn-clip flex items-center gap-3 flex-1 justify-center px-6 py-4 no-underline font-barlow-cond text-[0.95rem] font-bold tracking-[2px] uppercase text-white border border-white/20 transition-all duration-200 hover:border-[#E1306C] hover:bg-[#E1306C]/10 hover:-translate-y-0.5"
             >
               <InstagramIcon />
-              Instagram
+              <span lang="en">{dict.social.instagram}</span>
             </a>
             <a
               href="https://www.youtube.com/@ItayGershonOfficial"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Team Gershon on YouTube"
+              aria-label={dict.social.youtubeAria}
               className="btn-clip flex items-center gap-3 flex-1 justify-center px-6 py-4 no-underline font-barlow-cond text-[0.95rem] font-bold tracking-[2px] uppercase text-white border border-white/20 transition-all duration-200 hover:border-[#FF0000] hover:bg-[#FF0000]/10 hover:-translate-y-0.5"
             >
               <YouTubeIcon />
-              YouTube
+              <span lang="en">{dict.social.youtube}</span>
             </a>
             <a
               href="https://www.facebook.com/TeamGershonOfficial"
               target="_blank"
               rel="noopener noreferrer"
               onClick={handleFacebookClick}
-              aria-label="Team Gershon on Facebook"
+              aria-label={dict.social.facebookAria}
               className="btn-clip flex items-center gap-3 flex-1 justify-center px-6 py-4 no-underline font-barlow-cond text-[0.95rem] font-bold tracking-[2px] uppercase text-white border border-white/20 transition-all duration-200 hover:border-[#1877F2] hover:bg-[#1877F2]/10 hover:-translate-y-0.5"
             >
               <FacebookIcon />
-              Facebook
+              <span lang="en">{dict.social.facebook}</span>
             </a>
           </div>
         </div>
@@ -320,14 +361,14 @@ export default function Contact() {
         {/* Right: form */}
         <div ref={formRef} className="reveal bg-dark2 border border-red/20 p-10">
           <div className="font-bebas text-[2rem] tracking-[1px] text-cream mb-6">
-            SEND A MESSAGE
+            {dict.form.title}
           </div>
           <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
             <div className="grid grid-cols-2 gap-4">
               <FormField
-                label="First Name"
+                label={dict.form.firstNameLabel}
                 type="text"
-                placeholder="Your name"
+                placeholder={dict.form.firstNamePlaceholder}
                 value={form.firstName}
                 onChange={(v) => updateField("firstName", v)}
                 required
@@ -335,9 +376,9 @@ export default function Contact() {
                 maxLength={40}
               />
               <FormField
-                label="Last Name"
+                label={dict.form.lastNameLabel}
                 type="text"
-                placeholder="Last name"
+                placeholder={dict.form.lastNamePlaceholder}
                 value={form.lastName}
                 onChange={(v) => updateField("lastName", v)}
                 required
@@ -346,18 +387,18 @@ export default function Contact() {
               />
             </div>
             <FormField
-              label="Email Address"
+              label={dict.form.emailLabel}
               type="email"
-              placeholder="you@email.com"
+              placeholder={dict.form.emailPlaceholder}
               value={form.email}
               onChange={(v) => updateField("email", v)}
               required
               maxLength={120}
             />
             <FormField
-              label="Phone"
+              label={dict.form.phoneLabel}
               type="tel"
-              placeholder="+972 50 XXX XXXX"
+              placeholder={dict.form.phonePlaceholder}
               value={form.phone}
               onChange={(v) => updateField("phone", v)}
               required
@@ -365,29 +406,30 @@ export default function Contact() {
             />
             <div>
               <label className="font-barlow-cond text-[0.8rem] font-semibold tracking-[3px] uppercase text-muted block mb-2">
-                Experience Level
+                {dict.form.experienceLabel}
               </label>
               <select
                 value={form.experience}
                 onChange={(e) => updateField("experience", e.target.value)}
                 className="w-full bg-dark3 border border-white/[0.08] text-cream font-barlow text-[0.95rem] px-3.5 py-3 outline-none cursor-pointer transition-colors duration-200 focus:border-red/50"
               >
-                <option value="">Select your level...</option>
-                <option>Complete Beginner</option>
-                <option>Some Experience</option>
-                <option>Intermediate</option>
-                <option>Advanced / Competitive</option>
+                <option value="">{dict.form.experiencePlaceholder}</option>
+                {EXPERIENCE_OPTION_KEYS.map((key) => (
+                  <option key={key} value={dict.form.experienceOptions[key]}>
+                    {dict.form.experienceOptions[key]}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
               <label className="font-barlow-cond text-[0.8rem] font-semibold tracking-[3px] uppercase text-muted block mb-2">
-                Message
+                {dict.form.messageLabel}
               </label>
               <textarea
                 rows={4}
                 value={form.message}
                 onChange={(e) => updateField("message", e.target.value)}
-                placeholder="Tell us about your goals or any questions you have..."
+                placeholder={dict.form.messagePlaceholder}
                 required
                 maxLength={1000}
                 className="w-full bg-dark3 border border-white/[0.08] text-cream font-barlow text-[0.95rem] px-3.5 py-3 outline-none resize-none transition-colors duration-200 focus:border-red/50 placeholder:text-muted/50"
@@ -411,24 +453,26 @@ export default function Contact() {
             <button
               type="submit"
               disabled={status === "loading"}
-              className="w-full mt-2 font-barlow-cond text-[1rem] font-bold tracking-[3px] uppercase text-white py-4 border-none cursor-pointer transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-80"
-              style={{ background: status === "success" ? "#1a7a1a" : "#C8102E" }}
+              className={`w-full mt-2 font-barlow-cond text-[1rem] font-bold tracking-[3px] uppercase text-white py-4 border-none cursor-pointer transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-80 ${
+                status === "success" ? "bg-[#1a7a1a]" : "bg-red"
+              }`}
             >
               {status === "loading"
-                ? "Sending..."
+                ? dict.form.submitting
                 : status === "success"
-                ? "✓ Sent"
-                : "Send Message"}
+                ? dict.form.submitted
+                : dict.form.submit}
             </button>
 
             {status === "success" && (
               <div
                 role="status"
                 aria-live="polite"
+                lang="he"
                 dir="rtl"
                 className="bg-red/10 border border-red/40 text-cream px-4 py-3 font-barlow text-[0.95rem] text-center"
               >
-                ההודעה נשלחה בהצלחה!
+                {dict.form.successBanner}
               </div>
             )}
 
@@ -438,20 +482,20 @@ export default function Contact() {
                 aria-live="assertive"
                 className="bg-red/10 border border-red/40 text-cream px-4 py-3 font-barlow text-[0.9rem] text-center"
               >
-                Something went wrong. Please try again, or{" "}
+                {dict.form.errorBefore}{" "}
                 <button
                   type="button"
                   onClick={handleWhatsAppClick}
                   className="underline text-red hover:text-red-dark font-semibold"
                 >
-                  message us on WhatsApp
+                  {dict.form.errorLink}
                 </button>{" "}
-                for immediate assistance.
+                {dict.form.errorAfter}
               </div>
             )}
           </form>
           <p className="text-[0.8rem] text-muted text-center mt-4">
-            We&apos;ll respond within 24 hours. Or chat with us on WhatsApp for instant replies.
+            {dict.form.responseNote}
           </p>
         </div>
       </div>
