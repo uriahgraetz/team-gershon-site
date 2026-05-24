@@ -95,11 +95,11 @@ export default function About({ dict }: { dict: AboutDict }) {
             className="font-bebas leading-[0.88] tracking-[2px] text-cream"
             style={{ fontSize: "clamp(3rem, 7.2vw, 6.25rem)" }}
           >
-            BUILT ON
+            {dict.headingLine1}
             <br />
-            <span className="text-red">FIRE</span>
+            <span className="text-red">{dict.headingLine2}</span>
             <br />
-            &amp; DISCIPLINE
+            {dict.headingLine3}
           </h2>
 
           {/* Mobile-only profile sits between heading and panel */}
@@ -157,7 +157,7 @@ export default function About({ dict }: { dict: AboutDict }) {
             {/* Coach block */}
             <motion.div variants={fadeUp}>
               <p className="font-barlow-cond text-[0.75rem] font-semibold tracking-[4px] uppercase text-red mb-3">
-                The Coach
+                {dict.theCoach}
               </p>
               <h3 className="font-bebas text-cream text-[1.75rem] sm:text-[2rem] leading-none tracking-[1.5px] mb-4">
                 Itay Gershon
@@ -173,7 +173,7 @@ export default function About({ dict }: { dict: AboutDict }) {
             {/* Gym block */}
             <motion.div variants={fadeUp}>
               <p className="font-barlow-cond text-[0.75rem] font-semibold tracking-[4px] uppercase text-red mb-3">
-                The Gym
+                {dict.theGym}
               </p>
               <h3 className="font-bebas text-cream text-[1.75rem] sm:text-[2rem] leading-none tracking-[1.5px] mb-4">
                 Team Gershon
