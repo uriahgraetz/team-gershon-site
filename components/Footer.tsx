@@ -17,7 +17,11 @@ export default function Footer({
       >
         {dict.brand.team} <span className="text-red">{dict.brand.gershon}</span>
       </div>
-      <div className="text-[0.85rem] text-muted">{dict.copyright}</div>
+      <div className="text-[0.85rem] text-muted">
+        {dict.copyright}
+        <span aria-hidden="true" className="mx-2">•</span>
+        <span lang="en">Designed by GRAETZDESIGN</span>
+      </div>
       <div className="flex gap-6">
         {SECTION_IDS.map((id) => (
           <a
