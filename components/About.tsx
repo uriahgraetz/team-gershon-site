@@ -2,14 +2,11 @@
 
 import Image from "next/image";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
+import type { Dictionary } from "@/app/[lang]/getDictionary";
 
-const COACH_BODY =
-  "With years of experience competing at the highest levels of professional kickboxing, Itay Gershon brings world-class expertise to every training session. His journey from the ring to coaching is built on a foundation of relentless discipline, technical precision, and a deep passion for martial arts. Itay’s mission is to pass on the knowledge forged in combat, helping athletes of all levels unlock their true potential.";
+type AboutDict = Dictionary["about"];
 
-const GYM_BODY =
-  "Located in Jerusalem, Team Gershon is a premier Muay Thai and Boxing academy dedicated to building physical strength, character, and community. We offer a supportive yet highly focused environment where members can push their limits safely and effectively. Whether you are stepping onto the mats for the first time to get in shape or preparing for competition, Team Gershon is your home for striking excellence.";
-
-export default function About() {
+export default function About({ dict }: { dict: AboutDict }) {
   const reduce = useReducedMotion();
 
   const fadeUp: Variants = {
@@ -166,7 +163,7 @@ export default function About() {
                 Itay Gershon
               </h3>
               <p className="font-barlow font-light text-muted text-[1rem] sm:text-[1.05rem] leading-[1.75]">
-                {COACH_BODY}
+                {dict.itayBio}
               </p>
             </motion.div>
 
@@ -182,7 +179,7 @@ export default function About() {
                 Team Gershon
               </h3>
               <p className="font-barlow font-light text-muted text-[1rem] sm:text-[1.05rem] leading-[1.75]">
-                {GYM_BODY}
+                {dict.gymDescription}
               </p>
             </motion.div>
           </div>

@@ -23,7 +23,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           aria-hidden
           className="h-px w-full bg-gradient-to-r from-transparent via-red/25 to-transparent"
         />
-        <About />
+        <About dict={dict.about} />
         <Programs dict={dict.programs} />
         <Schedule dict={dict.schedule} />
         <Gallery dict={dict.gallery} />
