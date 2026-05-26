@@ -10,6 +10,7 @@ const SECTION_IDS = [
   "programs",
   "schedule",
   "gallery",
+  "shop",
   "contact",
 ] as const;
 

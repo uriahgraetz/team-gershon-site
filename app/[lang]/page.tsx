@@ -5,6 +5,7 @@ import Programs from "@/components/Programs";
 import Testimonials from "@/components/Testimonials";
 import Schedule from "@/components/Schedule";
 import Gallery from "@/components/Gallery";
+import WhatsAppStore from "@/components/WhatsAppStore";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import { notFound } from "next/navigation";
@@ -29,6 +30,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         <Testimonials dict={dict.testimonials} lang={lang} />
         <Schedule dict={dict.schedule} />
         <Gallery dict={dict.gallery} />
+        <WhatsAppStore dict={dict.shop} lang={lang} />
         <Contact dict={dict.contact} />
       </main>
       <Footer dict={dict.footer} />

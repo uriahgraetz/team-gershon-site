@@ -10,6 +10,7 @@
       "programs": "Programs",
       "schedule": "Schedule",
       "gallery": "Gallery",
+      "shop": "Shop",
       "contact": "Contact"
     },
     "cta": "Join Now",
@@ -194,6 +195,19 @@
       "prevImage": "Previous image",
       "nextImage": "Next image"
     }
+  },
+  "shop": {
+    "kicker": "Team Gear",
+    "headingTop": "TRAIN WITH",
+    "headingEmphasis": "OUR GEAR",
+    "body": "Equipment we use and trust at the gym. Pick what you need — message Itay on WhatsApp and pick it up on your next session.",
+    "priceCurrency": "₪",
+    "colorPlaceholder": "Choose Color",
+    "sizePlaceholder": "Choose Size",
+    "errorSelect": "Please select an option",
+    "cta": "Order Now",
+    "ariaPickColor": "Pick color",
+    "ariaPickSize": "Pick size"
   },
   "contact": {
     "kicker": "Get In Touch",

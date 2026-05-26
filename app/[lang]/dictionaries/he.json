@@ -10,6 +10,7 @@
       "programs": "תוכניות",
       "schedule": "לוח זמנים",
       "gallery": "גלריה",
+      "shop": "חנות",
       "contact": "צור קשר"
     },
     "cta": "הצטרפו עכשיו",
@@ -194,6 +195,19 @@
       "prevImage": "תמונה קודמת",
       "nextImage": "תמונה הבאה"
     }
+  },
+  "shop": {
+    "kicker": "ציוד המכון",
+    "headingTop": "ציוד",
+    "headingEmphasis": "האימון",
+    "body": "ציוד שאנחנו משתמשים בו וסומכים עליו במכון. בחרו את מה שצריך — שלחו הודעה לאיתי בוואטסאפ, ותאספו באימון הבא.",
+    "priceCurrency": "₪",
+    "colorPlaceholder": "בחר צבע",
+    "sizePlaceholder": "בחר מידה",
+    "errorSelect": "אנא בחר מידה/צבע",
+    "cta": "לרכישה",
+    "ariaPickColor": "בחירת צבע",
+    "ariaPickSize": "בחירת מידה"
   },
   "contact": {
     "kicker": "צרו קשר",
