@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Programs from "@/components/Programs";
+import Testimonials from "@/components/Testimonials";
 import Schedule from "@/components/Schedule";
 import Gallery from "@/components/Gallery";
 import Contact from "@/components/Contact";
@@ -25,6 +26,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         />
         <About dict={dict.about} />
         <Programs dict={dict.programs} />
+        <Testimonials dict={dict.testimonials} lang={lang} />
         <Schedule dict={dict.schedule} />
         <Gallery dict={dict.gallery} />
         <Contact dict={dict.contact} />

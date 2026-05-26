@@ -75,7 +75,14 @@
       }
     }
   },
-  "testimonials": [
+  "testimonials": {
+    "kicker": "Voices from the Gym",
+    "headingTop": "WHAT OUR FIGHTERS",
+    "headingEmphasis": "SAY",
+    "prevLabel": "Previous testimonial",
+    "nextLabel": "Next testimonial",
+    "goToLabel": "Go to testimonial",
+    "items": [
     {
       "id": 1,
       "name": "Maor Morad",
@@ -130,7 +137,8 @@
       "text": "First of all, the personal attention is like a father to a child. Patient, doesn't get angry, funny, and delivers classes at the highest level. I came from another club, and the gap between Team Gershon and other places is like night and day. The coach gives his heart and soul, and we see results in the ring. He personally believes in me, and I'm sure I'll go very far.",
       "role": "Member"
     }
-  ],
+    ]
+  },
   "schedule": {
     "kicker": "Weekly Sessions",
     "headingTop": "TRAINING",
