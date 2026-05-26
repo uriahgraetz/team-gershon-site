@@ -15,14 +15,34 @@ export default function Hero({ dict }: { dict: Dictionary["hero"] }) {
   const prefersReducedMotion = useReducedMotion();
 
   // The metallic sheen layer uses the logo PNG as a CSS mask, which bypasses
-  // next/image and would fetch the raw ~2.2 MB source eagerly — competing
-  // with the LCP image for bandwidth on mobile. Deferring its mount until
-  // after first paint pushes that fetch out of the critical path. The
-  // visible <Image> above is unaffected (next/image keeps optimizing it).
+  // next/image and would fetch the raw ~2.2 MB source eagerly — too costly
+  // for mobile data plans for a polish-tier desktop effect. We gate it on
+  // a desktop media query AND defer its mount past first paint, so:
+  //   - mobile (< 768px) never renders the layer → mask URL is never fetched
+  //   - desktop renders it 1.5s after first paint → fetch stays off the LCP
+  //     critical path
+  // `hidden` (display:none) would not be enough: some mobile browsers still
+  // resolve mask-image URLs on display:none elements.
   const [showSheen, setShowSheen] = useState(false);
   useEffect(() => {
-    const id = window.setTimeout(() => setShowSheen(true), 1500);
-    return () => window.clearTimeout(id);
+    const mql = window.matchMedia("(min-width: 768px)");
+    let timeoutId: number | undefined;
+
+    const sync = () => {
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+      if (mql.matches) {
+        timeoutId = window.setTimeout(() => setShowSheen(true), 1500);
+      } else {
+        setShowSheen(false);
+      }
+    };
+
+    sync();
+    mql.addEventListener("change", sync);
+    return () => {
+      mql.removeEventListener("change", sync);
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+    };
   }, []);
 
   // Mouse-tracked tilt — motion values avoid re-renders on every mousemove.
