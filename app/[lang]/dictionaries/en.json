@@ -241,6 +241,11 @@
       "errorAfter": "for immediate assistance.",
       "responseNote": "We'll respond within 24 hours. Or chat with us on WhatsApp for instant replies."
     },
+    "errors": {
+      "required": "This field is required",
+      "invalidPhone": "Please enter a valid phone number",
+      "invalidEmail": "Please enter a valid email address"
+    },
     "whatsapp": {
       "buttonLabel": "Chat on WhatsApp",
       "ariaLabel": "Chat with Team Gershon on WhatsApp",

@@ -241,6 +241,11 @@
       "errorAfter": "למענה מיידי.",
       "responseNote": "אנחנו משתדלים לענות תוך 24 שעות. לחיבור מהיר יותר, דברו איתנו בוואטסאפ."
     },
+    "errors": {
+      "required": "שדה זה חובה",
+      "invalidPhone": "נא להזין מספר טלפון תקין",
+      "invalidEmail": "נא להזין כתובת אימייל תקינה"
+    },
     "whatsapp": {
       "buttonLabel": "Chat on WhatsApp",
       "ariaLabel": "צ'אט עם טים גרשון בוואטסאפ",

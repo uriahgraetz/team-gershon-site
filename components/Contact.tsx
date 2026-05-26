@@ -82,12 +82,24 @@ const EMPTY_FORM: FormState = {
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
 
+type ValidatedField = "firstName" | "lastName" | "email" | "phone" | "message";
+type FieldErrors = Partial<Record<ValidatedField, string>>;
+
 const EXPERIENCE_OPTION_KEYS = [
   "beginner",
   "some",
   "intermediate",
   "advanced",
 ] as const;
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function isValidPhone(raw: string): boolean {
+  const trimmed = raw.trim();
+  if (!/^[+\d\s\-()]+$/.test(trimmed)) return false;
+  const digits = trimmed.replace(/\D/g, "");
+  return digits.length >= 9 && digits.length <= 15;
+}
 
 export default function Contact({
   dict,
@@ -96,12 +108,31 @@ export default function Contact({
 }) {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [errors, setErrors] = useState<FieldErrors>({});
   const [copiedKind, setCopiedKind] = useState<MethodKind | null>(null);
   const infoRef = useReveal<HTMLDivElement>();
   const formRef = useReveal<HTMLDivElement>();
 
   function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
+    setErrors((prev) => {
+      if (!(key in prev)) return prev;
+      const next = { ...prev };
+      delete next[key as ValidatedField];
+      return next;
+    });
+  }
+
+  function validate(): FieldErrors {
+    const e: FieldErrors = {};
+    if (!form.firstName.trim()) e.firstName = dict.errors.required;
+    if (!form.lastName.trim())  e.lastName  = dict.errors.required;
+    if (!form.email.trim())     e.email     = dict.errors.required;
+    else if (!EMAIL_RE.test(form.email.trim())) e.email = dict.errors.invalidEmail;
+    if (!form.phone.trim())     e.phone     = dict.errors.required;
+    else if (!isValidPhone(form.phone))         e.phone = dict.errors.invalidPhone;
+    if (!form.message.trim())   e.message   = dict.errors.required;
+    return e;
   }
 
   async function handleCopy(kind: MethodKind, value: string) {
@@ -118,6 +149,13 @@ export default function Contact({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (status === "loading") return;
+
+    const validation = validate();
+    if (Object.keys(validation).length > 0) {
+      setErrors(validation);
+      return;
+    }
+    setErrors({});
     setStatus("loading");
 
     const name = `${form.firstName} ${form.lastName}`.trim();
@@ -364,6 +402,7 @@ export default function Contact({
           <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
             <div className="grid grid-cols-2 gap-4">
               <FormField
+                name="firstName"
                 label={dict.form.firstNameLabel}
                 type="text"
                 placeholder={dict.form.firstNamePlaceholder}
@@ -372,8 +411,10 @@ export default function Contact({
                 required
                 minLength={1}
                 maxLength={40}
+                error={errors.firstName}
               />
               <FormField
+                name="lastName"
                 label={dict.form.lastNameLabel}
                 type="text"
                 placeholder={dict.form.lastNamePlaceholder}
@@ -382,9 +423,11 @@ export default function Contact({
                 required
                 minLength={1}
                 maxLength={40}
+                error={errors.lastName}
               />
             </div>
             <FormField
+              name="email"
               label={dict.form.emailLabel}
               type="email"
               placeholder={dict.form.emailPlaceholder}
@@ -392,8 +435,10 @@ export default function Contact({
               onChange={(v) => updateField("email", v)}
               required
               maxLength={120}
+              error={errors.email}
             />
             <FormField
+              name="phone"
               label={dict.form.phoneLabel}
               type="tel"
               placeholder={dict.form.phonePlaceholder}
@@ -401,6 +446,7 @@ export default function Contact({
               onChange={(v) => updateField("phone", v)}
               required
               maxLength={20}
+              error={errors.phone}
             />
             <div>
               <label className="font-barlow-cond text-[0.8rem] font-semibold tracking-[3px] uppercase text-muted block mb-2">
@@ -430,8 +476,23 @@ export default function Contact({
                 placeholder={dict.form.messagePlaceholder}
                 required
                 maxLength={1000}
-                className="w-full bg-dark3 border border-white/[0.08] text-cream font-barlow text-[0.95rem] px-3.5 py-3 outline-none resize-none transition-colors duration-200 focus:border-red/50 placeholder:text-muted/50"
+                aria-invalid={errors.message ? true : undefined}
+                aria-describedby={errors.message ? "message-error" : undefined}
+                className={`w-full bg-dark3 border text-cream font-barlow text-[0.95rem] px-3.5 py-3 outline-none resize-none transition-colors duration-200 placeholder:text-muted/50 ${
+                  errors.message
+                    ? "border-red focus:border-red"
+                    : "border-white/[0.08] focus:border-red/50"
+                }`}
               />
+              {errors.message && (
+                <p
+                  id="message-error"
+                  role="alert"
+                  className="text-[0.8rem] text-red mt-1 font-barlow text-start"
+                >
+                  {errors.message}
+                </p>
+              )}
             </div>
 
             {/* Honeypot — visually hidden, real users won't fill it; bots usually will */}
@@ -502,6 +563,7 @@ export default function Contact({
 }
 
 function FormField({
+  name,
   label,
   type,
   placeholder,
@@ -510,7 +572,9 @@ function FormField({
   required,
   minLength,
   maxLength,
+  error,
 }: {
+  name?: string;
   label: string;
   type: string;
   placeholder: string;
@@ -519,13 +583,16 @@ function FormField({
   required?: boolean;
   minLength?: number;
   maxLength?: number;
+  error?: string;
 }) {
+  const errorId = error && name ? `${name}-error` : undefined;
   return (
     <div>
       <label className="font-barlow-cond text-[0.8rem] font-semibold tracking-[3px] uppercase text-muted block mb-2">
         {label}
       </label>
       <input
+        name={name}
         type={type}
         placeholder={placeholder}
         value={value}
@@ -533,8 +600,23 @@ function FormField({
         required={required}
         minLength={minLength}
         maxLength={maxLength}
-        className="w-full bg-dark3 border border-white/[0.08] text-cream font-barlow text-[0.95rem] px-3.5 py-3 outline-none transition-colors duration-200 focus:border-red/50 placeholder:text-muted/50"
+        aria-invalid={error ? true : undefined}
+        aria-describedby={errorId}
+        className={`w-full bg-dark3 border text-cream font-barlow text-[0.95rem] px-3.5 py-3 outline-none transition-colors duration-200 placeholder:text-muted/50 ${
+          error
+            ? "border-red focus:border-red"
+            : "border-white/[0.08] focus:border-red/50"
+        }`}
       />
+      {error && (
+        <p
+          id={errorId}
+          role="alert"
+          className="text-[0.8rem] text-red mt-1 font-barlow text-start"
+        >
+          {error}
+        </p>
+      )}
     </div>
   );
 }
