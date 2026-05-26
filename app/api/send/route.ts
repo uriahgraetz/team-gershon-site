@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import { z } from "zod";
 
-const FROM_EMAIL = "Team Gershon <office@teamgershon.co.il>";
+const DEFAULT_FROM_EMAIL = "Team Gershon <office@teamgershon.co.il>";
 const SUBJECT = "ליד חם הגיע בוא נרתום אותו לעסק";
 
 const FormSchema = z.object({
@@ -10,8 +10,11 @@ const FormSchema = z.object({
   phone: z.string().trim().regex(/^[+\d][\d\s()+-]{6,19}$/, "Invalid phone"),
   message: z.string().trim().min(1).max(1000),
   experience: z.string().trim().max(60).optional(),
-  // Honeypot field — bots tend to fill every input. Must be empty.
-  website: z.string().max(0).optional(),
+  // Honeypot field — bots fill every input. We accept it as a normal string
+  // (no max(0)) so a bot that fills it still parses successfully; then we
+  // silently return 200 below without sending the email. Returning 400 here
+  // would teach bots to retry without the field.
+  website: z.string().max(200).optional(),
 });
 
 const WINDOW_MS = 60 * 60 * 1000;
@@ -49,8 +52,37 @@ function clientIp(req: Request): string {
   return req.headers.get("x-real-ip") ?? "unknown";
 }
 
+// Same-origin gate — modern browsers send `Origin` on every POST. A request
+// from another site (CSRF) will have a different Origin host than the Host
+// header on this request. If Origin is missing entirely we fall back to
+// Referer; if both are missing in production we reject.
+function isSameOrigin(req: Request): boolean {
+  const host = req.headers.get("host");
+  if (!host) return false;
+  const origin = req.headers.get("origin");
+  const referer = req.headers.get("referer");
+  const source = origin ?? referer;
+  if (!source) return process.env.NODE_ENV !== "production";
+  try {
+    return new URL(source).host === host;
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(req: Request) {
   try {
+    // Content-Type guard — blocks the simplest CSRF shape (HTML form POST,
+    // which would arrive as application/x-www-form-urlencoded).
+    const contentType = req.headers.get("content-type") ?? "";
+    if (!contentType.toLowerCase().includes("application/json")) {
+      return Response.json({ ok: false }, { status: 415 });
+    }
+
+    if (!isSameOrigin(req)) {
+      return Response.json({ ok: false }, { status: 403 });
+    }
+
     let body: unknown;
     try {
       body = await req.json();
@@ -64,7 +96,8 @@ export async function POST(req: Request) {
     }
     const data = parsed.data;
 
-    // Honeypot — silently succeed without sending
+    // Honeypot — return 200 silently without sending. Bots see a success
+    // and move on; legitimate users never fill the hidden field.
     if (data.website && data.website.length > 0) {
       return Response.json({ ok: true });
     }
@@ -89,6 +122,7 @@ export async function POST(req: Request) {
       console.error("/api/send: CONTACT_FORM_RECEIVER is not set");
       return Response.json({ ok: false }, { status: 500 });
     }
+    const fromEmail = process.env.CONTACT_FORM_SENDER ?? DEFAULT_FROM_EMAIL;
     const resend = new Resend(apiKey);
 
     const html = `
@@ -115,7 +149,7 @@ export async function POST(req: Request) {
       `\nMessage:\n${message}\n`;
 
     const result = await resend.emails.send({
-      from: FROM_EMAIL,
+      from: fromEmail,
       to: toEmail,
       replyTo: email,
       subject: SUBJECT,
