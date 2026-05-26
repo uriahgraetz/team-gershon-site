@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Dictionary } from "@/app/[lang]/getDictionary";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const SECTION_IDS = [
   "home",
@@ -46,13 +47,16 @@ export default function Navbar({ dict }: { dict: Dictionary["navbar"] }) {
         ))}
       </ul>
 
-      {/* Desktop CTA */}
-      <a
-        href="#contact"
-        className="hidden md:inline-block font-barlow-cond text-[0.85rem] font-bold tracking-[2px] uppercase text-cream bg-red px-6 py-[10px] no-underline transition-all duration-200 hover:bg-red-dark hover:-translate-y-px"
-      >
-        {dict.cta}
-      </a>
+      {/* Desktop: language switcher + CTA */}
+      <div className="hidden md:flex items-center gap-5">
+        <LanguageSwitcher />
+        <a
+          href="#contact"
+          className="font-barlow-cond text-[0.85rem] font-bold tracking-[2px] uppercase text-cream bg-red px-6 py-[10px] no-underline transition-all duration-200 hover:bg-red-dark hover:-translate-y-px"
+        >
+          {dict.cta}
+        </a>
+      </div>
 
       {/* Hamburger */}
       <button
@@ -84,13 +88,16 @@ export default function Navbar({ dict }: { dict: Dictionary["navbar"] }) {
               {link.label}
             </a>
           ))}
-          <a
-            href="#contact"
-            onClick={() => setMenuOpen(false)}
-            className="mt-2 inline-block font-barlow-cond text-[0.9rem] font-bold tracking-[2px] uppercase text-cream bg-red px-6 py-3 no-underline text-center"
-          >
-            {dict.cta}
-          </a>
+          <div className="flex items-center justify-between mt-2">
+            <a
+              href="#contact"
+              onClick={() => setMenuOpen(false)}
+              className="inline-block font-barlow-cond text-[0.9rem] font-bold tracking-[2px] uppercase text-cream bg-red px-6 py-3 no-underline text-center"
+            >
+              {dict.cta}
+            </a>
+            <LanguageSwitcher />
+          </div>
         </div>
       )}
     </nav>
