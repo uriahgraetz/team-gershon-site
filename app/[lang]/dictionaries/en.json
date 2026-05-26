@@ -239,7 +239,9 @@
       "errorBefore": "Something went wrong. Please try again, or",
       "errorLink": "message us on WhatsApp",
       "errorAfter": "for immediate assistance.",
-      "responseNote": "We'll respond within 24 hours. Or chat with us on WhatsApp for instant replies."
+      "fallbackStart": "We'll respond within 24 hours. Or chat with us on ",
+      "fallbackLink": "WhatsApp",
+      "fallbackEnd": " for instant replies."
     },
     "errors": {
       "required": "This field is required",

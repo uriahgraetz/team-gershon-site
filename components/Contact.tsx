@@ -554,7 +554,16 @@ export default function Contact({
             )}
           </form>
           <p className="text-[0.8rem] text-muted text-center mt-4">
-            {dict.form.responseNote}
+            {dict.form.fallbackStart}
+            <a
+              href={"https://wa.me/" + ["972", "54", "81", "41", "138"].join("")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold underline text-white transition-colors duration-200 hover:text-[#25D366]"
+            >
+              {dict.form.fallbackLink}
+            </a>
+            {dict.form.fallbackEnd}
           </p>
         </div>
       </div>
