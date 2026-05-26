@@ -13,14 +13,17 @@ const bebasNeue = Bebas_Neue({
   subsets: ["latin"],
 });
 
+// Weight inventory was audited against actual class usage: no Barlow
+// Condensed font-light (300) anywhere, and no Barlow font-medium (500).
+// Each weight = a separate WOFF2 file, so trimming saves bytes for free.
 const barlowCondensed = Barlow_Condensed({
-  weight: ["300", "400", "600", "700", "900"],
+  weight: ["400", "600", "700", "900"],
   variable: "--font-barlow-condensed",
   subsets: ["latin"],
 });
 
 const barlow = Barlow({
-  weight: ["300", "400", "500"],
+  weight: ["300", "400"],
   variable: "--font-barlow-sans",
   subsets: ["latin"],
 });

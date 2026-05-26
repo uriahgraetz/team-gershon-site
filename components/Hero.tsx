@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Image from "next/image";
 import {
   motion,
@@ -13,6 +13,17 @@ import type { Dictionary } from "@/app/[lang]/getDictionary";
 
 export default function Hero({ dict }: { dict: Dictionary["hero"] }) {
   const prefersReducedMotion = useReducedMotion();
+
+  // The metallic sheen layer uses the logo PNG as a CSS mask, which bypasses
+  // next/image and would fetch the raw ~2.2 MB source eagerly — competing
+  // with the LCP image for bandwidth on mobile. Deferring its mount until
+  // after first paint pushes that fetch out of the critical path. The
+  // visible <Image> above is unaffected (next/image keeps optimizing it).
+  const [showSheen, setShowSheen] = useState(false);
+  useEffect(() => {
+    const id = window.setTimeout(() => setShowSheen(true), 1500);
+    return () => window.clearTimeout(id);
+  }, []);
 
   // Mouse-tracked tilt — motion values avoid re-renders on every mousemove.
   const mouseX = useMotionValue(0);
@@ -132,30 +143,34 @@ export default function Hero({ dict }: { dict: Dictionary["hero"] }) {
                   draggable={false}
                 />
 
-                {/* Metallic sheen — masked to the logo's alpha */}
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0 overflow-hidden pointer-events-none"
-                  style={{
-                    WebkitMaskImage: "url(/images/team-gershon-logo-highres.png)",
-                    maskImage: "url(/images/team-gershon-logo-highres.png)",
-                    WebkitMaskRepeat: "no-repeat",
-                    maskRepeat: "no-repeat",
-                    WebkitMaskSize: "contain",
-                    maskSize: "contain",
-                    WebkitMaskPosition: "center",
-                    maskPosition: "center",
-                  }}
-                >
+                {/* Metallic sheen — masked to the logo's alpha. Mounted
+                    after first paint (see `showSheen` above) so the mask
+                    URL fetch doesn't compete with LCP. */}
+                {showSheen && (
                   <div
-                    className="absolute top-0 left-0 h-full w-1/3 animate-logo-sheen"
+                    aria-hidden="true"
+                    className="absolute inset-0 overflow-hidden pointer-events-none"
                     style={{
-                      background:
-                        "linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.0) 30%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0.0) 70%, transparent 100%)",
-                      mixBlendMode: "screen",
+                      WebkitMaskImage: "url(/images/team-gershon-logo-highres.png)",
+                      maskImage: "url(/images/team-gershon-logo-highres.png)",
+                      WebkitMaskRepeat: "no-repeat",
+                      maskRepeat: "no-repeat",
+                      WebkitMaskSize: "contain",
+                      maskSize: "contain",
+                      WebkitMaskPosition: "center",
+                      maskPosition: "center",
                     }}
-                  />
-                </div>
+                  >
+                    <div
+                      className="absolute top-0 left-0 h-full w-1/3 animate-logo-sheen"
+                      style={{
+                        background:
+                          "linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.0) 30%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0.0) 70%, transparent 100%)",
+                        mixBlendMode: "screen",
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </motion.div>
           </motion.div>
