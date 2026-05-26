@@ -75,6 +75,62 @@
       }
     }
   },
+  "testimonials": [
+    {
+      "id": 1,
+      "name": "Maor Morad",
+      "text": "I’ve been training with Itay for a year and a half, and I don't think there could be a place where I'd have as much fun as at Team Gershon. For me personally, the training here has boosted my self-confidence and my mental and physical strength, and I'm only 14. The place has felt like home to me for a while now, and I'm sure it will for anyone who joins. I am proud to be part of this killer gym, it's a huge privilege.",
+      "role": "Member"
+    },
+    {
+      "id": 2,
+      "name": "Idan Haim Jani",
+      "text": "I’ve been training for a good few years and have been to many clubs, and one of the clubs that drew me in the most is Gershon's. It feels like a highly professional home with a warm attitude towards everyone, no games. Itay gives his soul to the club, invests endlessly, and is always looking to improve it. There is no place that compares to it.",
+      "role": "Member"
+    },
+    {
+      "id": 3,
+      "name": "Shlomo Emanuel",
+      "text": "I’ve trained at many gyms, and Team Gershon has been the highest level and most fun environment to train at. Not only is Itai a world class fighter, he is also able to give over his skills to his students and is someone to look up to in life. Whether you train as a hobby or compete as a fighter this is the place to be. It’s a privilege to be a part of this team!",
+      "role": "Member"
+    },
+    {
+      "id": 4,
+      "name": "Yochai Eliyahu",
+      "text": "I've been training for almost 5 years, and as soon as I heard that Itay Gershon himself opened a group, I signed up immediately. I simply have no words. The attitude, the investment, the education - just everything. Beyond the path he has paved for many fighters to grow, the caring, the atmosphere - everything is just perfect. It's simply a privilege to come and train here.",
+      "role": "Member"
+    },
+    {
+      "id": 5,
+      "name": "Benny Movshovitz",
+      "text": "I've been training here for a while, and it's the most professional home I could ask for. Itay Gershon isn't just an elite fighter; he's a coach who sees everyone and demands honesty and hard work from you. There's no posing and no games here, just sweat, precise technique, and a level that's hard to find elsewhere. For anyone looking for a place that will truly push them forward, Team Gershon is the place.",
+      "role": "Member"
+    },
+    {
+      "id": 6,
+      "name": "Meir Israel",
+      "text": "Guys, this is the best gym in Jerusalem and in the country in general, truly an international level. I've trained at many gyms in my life, but Team Gershon is on a completely different level. It's a really great club. Anyone who wants to learn boxing and Muay Thai from scratch and become a fighter, this is the place for them. Patient coaches go over the smallest details with you. I've been training here for almost two years, and I'm really happy, feeling good, and progressing day by day. Highly recommended.",
+      "role": "Member"
+    },
+    {
+      "id": 7,
+      "name": "Ron Ben Kiki",
+      "text": "Before I came to Team Gershon, I was at a few gyms, but none of them were like Itay's. Itay is a professional; he himself is very experienced and is the person with the most knowledge in the sport in Israel. What I love is that everyone gets personal attention at the gym, regardless of whether you're a beginner or have been competing for years. And the workouts are insane—the most professional training you could ask for. I can testify about guys I know at the gym who improved more in one year than any athlete would in several years at another gym. In short, I highly recommend Team Gershon to anyone who wants to improve themselves, their fitness, and their health. This is the place.",
+      "role": "Member"
+    },
+    {
+      "id": 8,
+      "name": "Itzik Buksapan",
+      "text": "I’ve been training with Itay for over a year. The number one gym in the country, from the way people are treated to the overall atmosphere. If you want to become a professional, this is the place!!!!!",
+      "role": "Member"
+    },
+    {
+      "id": 9,
+      "name": "Eliel Chen",
+      "text": "First of all, the personal attention is like a father to a child. Patient, doesn't get angry, funny, and delivers classes at the highest level. I came from another club, and the gap between Team Gershon and other places is like night and day. The coach gives his heart and soul, and we see results in the ring. He personally believes in me, and I'm sure I'll go very far.",
+      "role": "Member"
+    }
+  ],
   "schedule": {
     "kicker": "Weekly Sessions",
     "headingTop": "TRAINING",
