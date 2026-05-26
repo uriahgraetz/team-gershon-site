@@ -190,7 +190,9 @@
       "prevPhotos": "תמונות קודמות",
       "nextPhotos": "תמונות הבאות",
       "closeVideo": "סגירת סרטון",
-      "closeImage": "סגירת תמונה"
+      "closeImage": "סגירת תמונה",
+      "prevImage": "תמונה קודמת",
+      "nextImage": "תמונה הבאה"
     }
   },
   "contact": {

@@ -190,7 +190,9 @@
       "prevPhotos": "Previous photos",
       "nextPhotos": "Next photos",
       "closeVideo": "Close video",
-      "closeImage": "Close image"
+      "closeImage": "Close image",
+      "prevImage": "Previous image",
+      "nextImage": "Next image"
     }
   },
   "contact": {

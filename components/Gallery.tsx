@@ -113,7 +113,8 @@ export default function Gallery({
 }: {
   dict: Dictionary["gallery"];
 }) {
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeVideo, setActiveVideo] = useState<string | null>(null);
+  const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
   const [inlinePlayingId, setInlinePlayingId] = useState<string | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const headerRef = useReveal<HTMLDivElement>();
@@ -129,7 +130,29 @@ export default function Gallery({
     alt: `${dict.trainingPhotoAltPrefix} #${i + 1}`,
   }));
 
-  const close = useCallback(() => setActiveId(null), []);
+  const photoCount = trainingPhotos.length;
+
+  const isModalOpen = activeVideo !== null || activePhotoIndex !== null;
+
+  const closeModal = useCallback(() => {
+    setActiveVideo(null);
+    setActivePhotoIndex(null);
+  }, []);
+
+  const goPrevPhoto = useCallback(() => {
+    setActivePhotoIndex((i) => (i === null ? null : (i - 1 + photoCount) % photoCount));
+  }, [photoCount]);
+
+  const goNextPhoto = useCallback(() => {
+    setActivePhotoIndex((i) => (i === null ? null : (i + 1) % photoCount));
+  }, [photoCount]);
+
+  // Ref-based snapshot of activePhotoIndex so the keyboard handler never
+  // goes stale without re-attaching the listener on every navigation.
+  const activePhotoIndexRef = useRef(activePhotoIndex);
+  useEffect(() => {
+    activePhotoIndexRef.current = activePhotoIndex;
+  }, [activePhotoIndex]);
 
   // Hybrid playback router — desktop opens the modal, mobile mounts the
   // iframe inline inside the tapped card. Viewport is read at click time
@@ -139,32 +162,43 @@ export default function Gallery({
     const isDesktop = window.matchMedia("(min-width: 768px)").matches;
     if (isDesktop) {
       setInlinePlayingId(null);
-      setActiveId(id);
+      setActiveVideo(id);
     } else {
-      setActiveId(null);
+      setActiveVideo(null);
       setInlinePlayingId(id);
     }
   }, []);
 
+  // Scroll lock — runs only on modal open/close, not on every navigation.
   useEffect(() => {
-    if (!activeId) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-    };
-    document.addEventListener("keydown", onKey);
-    const prevOverflow = document.body.style.overflow;
+    if (!isModalOpen) return;
+    const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
+      document.body.style.overflow = prev;
     };
-  }, [activeId, close]);
+  }, [isModalOpen]);
 
-  const active: GalleryItem | null = activeId
-    ? VIDEO_ITEMS.find((i) => i.id === activeId) ??
-      trainingPhotos.find((i) => i.id === activeId) ??
-      null
-    : null;
+  // Keyboard navigation — stale-closure-safe via activePhotoIndexRef.
+  useEffect(() => {
+    if (!isModalOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeModal();
+      if (activePhotoIndexRef.current !== null) {
+        if (e.key === "ArrowLeft") goPrevPhoto();
+        if (e.key === "ArrowRight") goNextPhoto();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [isModalOpen, closeModal, goPrevPhoto, goNextPhoto]);
+
+  const activeItem: GalleryItem | null =
+    activeVideo
+      ? VIDEO_ITEMS.find((i) => i.id === activeVideo) ?? null
+      : activePhotoIndex !== null
+      ? trainingPhotos[activePhotoIndex]
+      : null;
 
   return (
     <section id="gallery" className="py-32 px-[5vw] bg-black-deep">
@@ -229,17 +263,21 @@ export default function Gallery({
         <TrainingCarousel
           photos={trainingPhotos}
           dict={dict}
-          onOpen={(id) => setActiveId(id)}
+          onOpen={(index) => setActivePhotoIndex(index)}
         />
       </div>
 
       <AnimatePresence>
-        {active && (
+        {activeItem && (
           <Modal
-            item={active}
+            item={activeItem}
             dict={dict}
-            onClose={close}
+            onClose={closeModal}
             reduced={!!prefersReducedMotion}
+            onPrev={activePhotoIndex !== null ? goPrevPhoto : undefined}
+            onNext={activePhotoIndex !== null ? goNextPhoto : undefined}
+            currentIndex={activePhotoIndex ?? undefined}
+            total={activePhotoIndex !== null ? photoCount : undefined}
           />
         )}
       </AnimatePresence>
@@ -363,7 +401,7 @@ function TrainingCarousel({
 }: {
   photos: ImageItem[];
   dict: Dictionary["gallery"];
-  onOpen: (id: string) => void;
+  onOpen: (index: number) => void;
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [canLeft, setCanLeft] = useState(false);
@@ -406,7 +444,7 @@ function TrainingCarousel({
             >
               <button
                 type="button"
-                onClick={() => onOpen(photo.id)}
+                onClick={() => onOpen(index)}
                 aria-label={`${dict.aria.openPhoto} ${index + 1}/${photos.length}`}
                 className="relative block w-full aspect-[4/5] overflow-hidden bg-dark2 border border-white/[0.06] transition-colors duration-300 hover:border-red/60 focus-visible:border-red focus-visible:outline-none"
               >
@@ -460,16 +498,45 @@ function Modal({
   dict,
   onClose,
   reduced,
+  onPrev,
+  onNext,
+  currentIndex,
+  total,
 }: {
   item: GalleryItem;
   dict: Dictionary["gallery"];
   onClose: () => void;
   reduced: boolean;
+  onPrev?: () => void;
+  onNext?: () => void;
+  currentIndex?: number;
+  total?: number;
 }) {
+  const isImage = item.kind === "image";
   const modalLabel =
     item.kind === "video" ? dict.videoTitles[item.id] : item.alt;
   const closeLabel =
     item.kind === "video" ? dict.aria.closeVideo : dict.aria.closeImage;
+
+  // Touch-swipe state — stored in a ref to avoid re-renders on every touchmove.
+  const touchStartX = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isImage) return;
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isImage || touchStartX.current === null || !onPrev || !onNext) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) < 50) return;
+    if (dx < 0) onNext();
+    else onPrev();
+  };
+
+  const navBtnClass =
+    "absolute top-1/2 -translate-y-1/2 z-10 w-11 h-11 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-black-deep/80 border border-white/[0.08] text-cream transition-all duration-200 hover:bg-red hover:border-red focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red";
 
   return (
     <motion.div
@@ -479,10 +546,41 @@ function Modal({
       transition={{ duration: reduced ? 0 : 0.25, ease: "easeOut" }}
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black-deep/95 backdrop-blur-sm px-4 py-10"
       onClick={onClose}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       role="dialog"
       aria-modal="true"
       aria-label={modalLabel}
     >
+      {/* Prev / Next — image modals only, positioned at viewport edges */}
+      {isImage && onPrev && onNext && (
+        <>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onPrev(); }}
+            aria-label={dict.aria.prevImage}
+            className={`${navBtnClass} start-3 md:start-6`}
+          >
+            <ChevronIcon dir="left" className="w-5 h-5 rtl:rotate-180" />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onNext(); }}
+            aria-label={dict.aria.nextImage}
+            className={`${navBtnClass} end-3 md:end-6`}
+          >
+            <ChevronIcon dir="right" className="w-5 h-5 rtl:rotate-180" />
+          </button>
+        </>
+      )}
+
+      {/* Counter — subtle "3 / 9" at bottom of viewport */}
+      {isImage && currentIndex !== undefined && total !== undefined && (
+        <p className="absolute bottom-5 inset-x-0 text-center font-barlow-cond text-[0.8rem] tracking-[3px] text-muted pointer-events-none select-none">
+          {currentIndex + 1} / {total}
+        </p>
+      )}
+
       <motion.div
         initial={reduced ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
