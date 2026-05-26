@@ -404,16 +404,21 @@ function TrainingCarousel({
   onOpen: (index: number) => void;
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const [canLeft, setCanLeft] = useState(false);
-  const [canRight, setCanRight] = useState(true);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
 
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
     const update = () => {
       const max = el.scrollWidth - el.clientWidth;
-      setCanLeft(el.scrollLeft > 4);
-      setCanRight(el.scrollLeft < max - 4);
+      // Modern browsers use the "negative" RTL scroll model: scrollLeft
+      // starts at 0 at inline-start (visually right in RTL) and runs to
+      // -max at inline-end. |scrollLeft| gives a direction-agnostic
+      // "distance from start", so boundary checks work in both modes.
+      const dist = Math.abs(el.scrollLeft);
+      setCanPrev(dist > 4);
+      setCanNext(dist < max - 4);
     };
     update();
     el.addEventListener("scroll", update, { passive: true });
@@ -424,10 +429,19 @@ function TrainingCarousel({
     };
   }, []);
 
-  const scrollByPage = (dir: 1 | -1) => {
+  const scrollByPage = (direction: "prev" | "next") => {
     const el = scrollerRef.current;
     if (!el) return;
-    el.scrollBy({ left: dir * el.clientWidth * 0.85, behavior: "smooth" });
+    // scrollBy's `left` is physical px (positive = visually right), so the
+    // sign flips by direction AND by writing mode:
+    //   LTR:  next → +Δ (right),  prev → −Δ (left)
+    //   RTL:  next → −Δ (left into overflow),  prev → +Δ (right back to start)
+    // Read the computed direction on each click so a locale switch is
+    // picked up without a re-mount, and so there's no first-paint race.
+    const isRtl = getComputedStyle(el).direction === "rtl";
+    const delta = el.clientWidth * 0.85;
+    const sign = direction === "next" ? (isRtl ? -1 : 1) : isRtl ? 1 : -1;
+    el.scrollBy({ left: sign * delta, behavior: "smooth" });
   };
 
   return (
@@ -473,8 +487,8 @@ function TrainingCarousel({
           earlier items (right in RTL) and next toward later items. */}
       <button
         type="button"
-        onClick={() => scrollByPage(-1)}
-        disabled={!canLeft}
+        onClick={() => scrollByPage("prev")}
+        disabled={!canPrev}
         aria-label={dict.aria.prevPhotos}
         className="hidden md:flex absolute start-4 top-1/2 -translate-y-1/2 w-12 h-12 items-center justify-center rounded-full bg-black-deep/70 backdrop-blur-sm border border-white/[0.08] text-cream opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red hover:border-red disabled:opacity-0 disabled:pointer-events-none focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
       >
@@ -482,8 +496,8 @@ function TrainingCarousel({
       </button>
       <button
         type="button"
-        onClick={() => scrollByPage(1)}
-        disabled={!canRight}
+        onClick={() => scrollByPage("next")}
+        disabled={!canNext}
         aria-label={dict.aria.nextPhotos}
         className="hidden md:flex absolute end-4 top-1/2 -translate-y-1/2 w-12 h-12 items-center justify-center rounded-full bg-black-deep/70 backdrop-blur-sm border border-white/[0.08] text-cream opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red hover:border-red disabled:opacity-0 disabled:pointer-events-none focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
       >
